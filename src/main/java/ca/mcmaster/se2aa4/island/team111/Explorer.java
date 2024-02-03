@@ -10,6 +10,9 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
+    int moves = 0;
+    int maxmoves = 50;
+
     private final Logger logger = LogManager.getLogger();
 
     @Override
@@ -26,7 +29,15 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
-        decision.put("action", "stop"); // we stop the exploration immediately
+        if((moves<=maxmoves)&&(moves%2 == 0)){
+            decision.put("action", "scan");
+        }else if(moves<=maxmoves){
+            decision.put("action", "fly");
+        }else{
+            decision.put("action", "stop");
+        }
+        moves += 1;
+
         logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
