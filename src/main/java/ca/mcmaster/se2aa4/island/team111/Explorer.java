@@ -12,8 +12,8 @@ public class Explorer implements IExplorerRaid {
 
     int moves = 0;
     int maxmoves = 50;
-
     private final Logger logger = LogManager.getLogger();
+    public static JSONObject extras;
 
     @Override
     public void initialize(String s) {
@@ -31,19 +31,21 @@ public class Explorer implements IExplorerRaid {
         JSONObject decision = new JSONObject();
         JSONObject parameters = new JSONObject();
 
-        if((moves<=maxmoves)&&(moves%2==0)){
+        if((moves<=maxmoves)&&(moves%2 == 0)){
+            decision.put("action", "fly");
+        }else if (moves<=maxmoves){
             parameters.put("direction","S");
-            
             decision.put("action","echo");
             decision.put("parameters",parameters);
-        }else if(moves<=maxmoves){
-            decision.put("action","fly");
-        }else{
-            decision.put("action","stop");
+        }
+
+        if (moves>6 && moves%2 == 0) {
+            if (behaviour.findIsland(extras) == "GROUND") {
+            logger.info("Range: " + behaviour.giveRange());
+            }
         }
         moves += 1;
 
-        logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
 
@@ -56,6 +58,7 @@ public class Explorer implements IExplorerRaid {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
+        extras = extraInfo;
         logger.info("Additional information received: {}", extraInfo);
     }
 
@@ -63,5 +66,7 @@ public class Explorer implements IExplorerRaid {
     public String deliverFinalReport() {
         return "no creek found";
     }
+
+
 
 }
