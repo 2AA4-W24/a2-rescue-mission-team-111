@@ -29,12 +29,17 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
-        if((moves<=maxmoves)&&(moves%2 == 0)){
-            decision.put("action", "scan");
+        JSONObject parameters = new JSONObject();
+
+        if((moves<=maxmoves)&&(moves%2==0)){
+            parameters.put("direction","S");
+            
+            decision.put("action","echo");
+            decision.put("parameters",parameters);
         }else if(moves<=maxmoves){
-            decision.put("action", "fly");
+            decision.put("action","fly");
         }else{
-            decision.put("action", "stop");
+            decision.put("action","stop");
         }
         moves += 1;
 
