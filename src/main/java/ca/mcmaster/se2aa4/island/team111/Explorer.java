@@ -8,7 +8,7 @@ import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class Explorer implements IExplorerRaid {
+public class Explorer implements IExplorerRaid, Compass {
 
     int moves = 0;
     int maxmoves = 50;
@@ -24,6 +24,7 @@ public class Explorer implements IExplorerRaid {
         Integer batteryLevel = info.getInt("budget");
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
+        logger.info("Left:", headingRotate(direction, Turn.L));
     }
 
     @Override
