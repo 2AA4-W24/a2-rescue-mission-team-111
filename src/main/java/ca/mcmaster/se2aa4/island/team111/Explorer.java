@@ -10,6 +10,7 @@ import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid, Compass {
 
+    int choice = 1;
     int moves = 0;
     int maxmoves = 50;
     private final Logger logger = LogManager.getLogger();
@@ -30,22 +31,28 @@ public class Explorer implements IExplorerRaid, Compass {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
-        JSONObject parameters = new JSONObject();
 
         if((moves<=maxmoves)&&(moves%2 == 0)){
             decision.put("action", "fly");
         }else if (moves<=maxmoves){
-            parameters.put("direction","S");
-            decision.put("action","echo");
-            decision.put("parameters",parameters);
+            switch (choice) {
+            case 1: choice = 2; decision = surroundings.echoRight("E"); break;
+            case 2: choice = 3; decision = surroundings.echoLeft("E"); break;
+            case 3: choice = 1; decision = surroundings.echoForwards("E"); break;
+            }
         }
 
         if (moves>6 && moves%2 == 0) {
-            if (behaviour.findIsland(extras) == "GROUND") {
-            logger.info("Range: " + behaviour.giveRange());
+            behaviour b1 = new behaviour();
+            b1.findIsland(extras);
+            logger.info("TRUE BIOME: " + b1.giveBiome());
+            if (b1.giveBiome().equals("GROUND")) {
+                logger.info("TRUE RANGE: " + b1.giveRange());
+                logger.info("RETURN TO BASE");
+                decision.put("action", "stop");
             }
         }
-        moves += 1;
+        moves++;
 
         return decision.toString();
     }
@@ -67,7 +74,5 @@ public class Explorer implements IExplorerRaid, Compass {
     public String deliverFinalReport() {
         return "no creek found";
     }
-
-
 
 }
