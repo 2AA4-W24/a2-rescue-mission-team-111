@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.json.JSONTokener; 
 
 public class Explorer implements IExplorerRaid, Compass {
 
@@ -96,7 +96,8 @@ public class Explorer implements IExplorerRaid, Compass {
             }
         }
 
-        if (moves>6 && moves%2 == 0) {
+            if (moves>6 && moves%2 == 0) { 
+            behaviour b1 = new behaviour();
             b1.findIsland(extras);
             logger.info("TRUE BIOME: " + b1.giveBiome());
             if (b1.giveBiome().equals("GROUND")) {
