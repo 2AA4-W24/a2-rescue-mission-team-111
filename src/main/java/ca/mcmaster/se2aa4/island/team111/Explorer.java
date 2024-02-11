@@ -97,7 +97,7 @@ public class Explorer implements IExplorerRaid, Compass {
         }
 
             if (moves>6 && moves%2 == 0) { 
-            behaviour b1 = new behaviour();
+            Behaviour b1 = new Behaviour();
             b1.findIsland(extras);
             logger.info("TRUE BIOME: " + b1.giveBiome());
             if (b1.giveBiome().equals("GROUND")) {
