@@ -42,7 +42,7 @@ public class Explorer implements IExplorerRaid, Compass {
             }
         }
 
-        if (moves>6 && moves%2 == 0) {
+        if (moves>6 && moves%2 == 0) { 
             behaviour b1 = new behaviour();
             b1.findIsland(extras);
             logger.info("TRUE BIOME: " + b1.giveBiome());
