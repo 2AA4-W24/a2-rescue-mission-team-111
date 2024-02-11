@@ -1,5 +1,6 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+
 public interface Compass {
     enum Turn{L,R,F}
     default String headingRotate(String heading, Turn turn){
