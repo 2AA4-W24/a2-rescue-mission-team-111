@@ -16,6 +16,7 @@ public class Explorer implements IExplorerRaid, Compass {
     Surroundings s1 = new Surroundings();
 
     String dir;
+    String new_dir;
 
     int moves = 0;
     int maxmoves = 50;
@@ -28,7 +29,8 @@ public class Explorer implements IExplorerRaid, Compass {
 
     boolean island_found = false;
     boolean turned = false;
-    boolean scanning = true;
+    boolean echoing = true;
+    boolean finding = true;
 
 
     @Override
@@ -50,7 +52,6 @@ public class Explorer implements IExplorerRaid, Compass {
 
         if (island_found) {
             if (!turned) {
-            String new_dir = "";
             switch (final_choice) {
                 case 0: switch (dir) {
                     case "E": new_dir = "S"; break;
@@ -74,12 +75,18 @@ public class Explorer implements IExplorerRaid, Compass {
             return decision.toString();
             
         } else {
-            if (scanning) {
-                decision.put("action", "scan");
-                scanning = false;
+            if (echoing) {
+                logger.info("DIRECTION: " + new_dir);
+                decision = s1.echoForwards(new_dir);
+                echoing = false;
+                return decision.toString();
             } else {
+                if (finding) {
+                    b1.findIsland(extras);
+                    finding = false;
+                } 
                 decision = b1.moveToIsland(extras);
-                scanning = true;
+                return decision.toString();
             }
         }
             

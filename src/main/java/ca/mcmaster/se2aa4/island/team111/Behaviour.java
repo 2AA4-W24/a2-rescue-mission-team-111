@@ -8,6 +8,7 @@ public class Behaviour{
 
     private final Logger logger = LogManager.getLogger();
 
+    private int moves;
     private int range = 0;
     private String biome = "";
 
@@ -24,19 +25,24 @@ public class Behaviour{
 
     public JSONObject moveToIsland(JSONObject extra) {
         JSONObject decision = new JSONObject();
-        JSONArray biomes = new JSONArray(extra.getJSONArray("biomes"));
-        for (int i = 0; i<biomes.length(); i++) {
-            if (!biomes.get(i).equals("OCEAN") || !extra.getJSONArray("creeks").isEmpty()) {
-                decision.put("action", "stop");
-                return decision;
-            } 
+        if (moves<range) {
+            decision.put("action", "fly");
+            moves++;
+        } else if (moves == range) {
+            decision.put("action", "scan");
+            moves++;
+        } else {
+            decision.put("action", "stop");
         }
-        decision.put("action", "fly");
         return decision;
     }
 
     public String giveBiome() {
         return biome;
+    }
+
+    public void setRange(int new_range) {
+        this.range = new_range;
     }
 
     public int giveRange() {
