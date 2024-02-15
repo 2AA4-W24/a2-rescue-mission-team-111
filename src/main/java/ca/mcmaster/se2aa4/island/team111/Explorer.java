@@ -76,6 +76,7 @@ public class Explorer implements IExplorerRaid, Compass {
             turned = true;
             return decision.toString();
             
+
         } else {
             if (echoing) {
                 logger.info("DIRECTION: " + new_dir);
