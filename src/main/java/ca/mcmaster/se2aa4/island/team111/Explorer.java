@@ -11,6 +11,8 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid, Compass {
 
     private final Logger logger = LogManager.getLogger();
+    Translator t = new Translator();
+
     public JSONObject extras;
     Behaviour b1 = new Behaviour();
     Surroundings s1 = new Surroundings();
@@ -123,6 +125,7 @@ public class Explorer implements IExplorerRaid, Compass {
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
+        Information I = t.translate(response);
         logger.info("** Response received:\n"+response.toString(2));
         Integer cost = response.getInt("cost");
         logger.info("The cost of the action was {}", cost);
@@ -132,6 +135,7 @@ public class Explorer implements IExplorerRaid, Compass {
         extras = extraInfo;
         logger.info("Additional information received: {}", extraInfo);
     }
+
 
     @Override
     public String deliverFinalReport() {
