@@ -11,7 +11,9 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid, Compass {
 
     private final Logger logger = LogManager.getLogger();
+
     Translator t = new Translator();
+    Drone drone;
 
     public JSONObject extras;
     Behaviour b1 = new Behaviour();
@@ -43,6 +45,7 @@ public class Explorer implements IExplorerRaid, Compass {
         String direction = info.getString("heading");
         dir = direction;
         Integer batteryLevel = info.getInt("budget");
+        drone = new Drone(batteryLevel, direction);
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
         logger.info("Left:", headingRotate(direction, Turn.L));
@@ -51,6 +54,11 @@ public class Explorer implements IExplorerRaid, Compass {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
+
+        if (drone.lowBattery()) {
+            logger.info("Low battery!");
+            decision.put("action", "stop");
+        }
 
         if (island_found) {
             if (!turned) {
@@ -127,6 +135,7 @@ public class Explorer implements IExplorerRaid, Compass {
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
         Information I = t.translate(response);
+        drone.receiveInfo(I);
         logger.info("** Response received:\n"+response.toString(2));
         Integer cost = response.getInt("cost");
         logger.info("The cost of the action was {}", cost);
