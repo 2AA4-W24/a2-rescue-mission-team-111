@@ -8,28 +8,53 @@ public class EchoArrive {
     int range;
     boolean echoing = true;
     boolean done = false;
+    boolean echoingR = true;
     String new_dir;
 
     public JSONObject findIsland(JSONObject extra, String direction) {
 
         JSONObject decision = new JSONObject();
         if (extra == null || extra.isEmpty()) {
-            decision = echoRight(direction); //later, drone will use this and pass it's own direction in
-        } else if (extra.get("found").equals("GROUND")) {
-            switch (direction) { //will implement rotation in Compass/Direction
-                case "E": new_dir = "S";
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", "S")); break;
-                case "S": new_dir = "W";
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", "W")); break;
-                case "N": new_dir = "E";
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", "E")); break;
-                case "W": new_dir = "N";
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", "N")); break;
+            if (echoingR) {
+                decision = echoRight(direction); //later, drone will use this and pass it's own direction in
+                echoingR = false;
+            } else {
+                decision = echoLeft(direction);
+                echoingR = true;
             }
+
+        } else if (extra.get("found").equals("GROUND")) {
+            if (!echoingR) {
+                switch (direction) { //will implement rotation in Compass/Direction
+                    case "E": new_dir = "S";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "S")); break;
+                    case "S": new_dir = "W";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "W")); break;
+                    case "N": new_dir = "E";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "E")); break;
+                    case "W": new_dir = "N";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "N")); break;
+                }
+            } else {
+                switch (direction) { //will implement rotation in Compass/Direction
+                    case "E": new_dir = "N";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "N")); break;
+                    case "S": new_dir = "E";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "E")); break;
+                    case "N": new_dir = "W";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "W")); break;
+                    case "W": new_dir = "S";
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", "S")); break;
+            }
+        }
         } else {
             decision.put("action", "fly");
         }
@@ -77,6 +102,23 @@ public class EchoArrive {
             decision.put("parameters", (new JSONObject()).put("direction", "N")); break;
             case "S": decision.put("action", "echo");
             decision.put("parameters", (new JSONObject()).put("direction", "W")); break;
+        }
+    
+        return decision;
+    }
+
+    private JSONObject echoLeft(String direction) {
+        JSONObject decision = new JSONObject();
+
+        switch(direction) {
+            case "E": decision.put("action", "echo");
+            decision.put("parameters", (new JSONObject()).put("direction", "N")); break;
+            case "N": decision.put("action", "echo");
+            decision.put("parameters", (new JSONObject()).put("direction", "W")); break;
+            case "W": decision.put("action", "echo");
+            decision.put("parameters", (new JSONObject()).put("direction", "S")); break;
+            case "S": decision.put("action", "echo");
+            decision.put("parameters", (new JSONObject()).put("direction", "E")); break;
         }
     
         return decision;
