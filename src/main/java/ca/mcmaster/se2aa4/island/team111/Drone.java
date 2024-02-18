@@ -26,13 +26,11 @@ public class Drone implements DroneInfo {
     public Compass currentDirection() {
         return direction;
     }
-
     
     public void receiveInfo(Information I) {
         current_info = I;
         battery.depleteCharge(I.getCost());
     }
-
 
     public JSONObject giveDecision() {
         JSONObject decision = new JSONObject();
@@ -67,11 +65,9 @@ public class Drone implements DroneInfo {
             
         }
         return decision;
-
     }
 
     public void displayResults() {
         System.out.println("no creek found");
     }
-
 }

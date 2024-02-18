@@ -33,5 +33,4 @@ public class Position {
     public void decreaseX(int x) {
         this.x = x - 1;
     }
-
 }  

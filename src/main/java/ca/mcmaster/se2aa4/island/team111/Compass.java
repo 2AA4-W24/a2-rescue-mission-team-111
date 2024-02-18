@@ -2,10 +2,7 @@ package ca.mcmaster.se2aa4.island.team111;
 
 public enum Compass 
 {
-    NORTH,
-    WEST,
-    SOUTH,
-    EAST;
+    NORTH, WEST, SOUTH, EAST;
 
     public Compass left(Compass heading){
         switch(heading){

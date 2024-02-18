@@ -15,7 +15,6 @@ public class Explorer implements IExplorerRaid {
     Translator t = new Translator();
     Drone drone;
 
-
     @Override
     public void initialize(String s) {
         logger.info("** Initializing the Exploration Command Center");
@@ -51,10 +50,8 @@ public class Explorer implements IExplorerRaid {
         logger.info("Additional information received: {}", extraInfo);
     }
 
-
     @Override
     public String deliverFinalReport() {
         return "no creek found";
     }
-
 }

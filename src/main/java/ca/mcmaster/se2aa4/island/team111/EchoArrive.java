@@ -6,8 +6,7 @@ public class EchoArrive {
 
     private int moves_to_island = 0;
     private int range;
-    private boolean echoing = true;
-    private boolean done = false;
+    private boolean echoFirst = true;
     private boolean echoingR = true;
 
     public JSONObject findIsland(JSONObject extra, Compass direction) {
@@ -18,12 +17,12 @@ public class EchoArrive {
                 Compass echo = direction.right(direction);
                 decision.put("action", "echo");
                 decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS(echo)));
-                echoingR = false;
+                echoingR = !echoingR;
             } else {
                 Compass echo = direction.left(direction);
                 decision.put("action", "echo");
                 decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS(echo)));
-                echoingR = true;
+                echoingR = !echoingR;
             }
 
         } else if (extra.get("found").equals("GROUND")) {
@@ -45,14 +44,14 @@ public class EchoArrive {
     public JSONObject moveToIsland(JSONObject extras, Compass direction) {
         JSONObject decision = new JSONObject();
 
-        if (echoing) {
+        if (echoFirst) {
             decision.put("action", "echo");
             decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS(direction)));
-            echoing = false;
+            echoFirst = false;
             return decision;
         } 
 
-        if (!extras.isEmpty() && !done) {
+        if (!extras.isEmpty()) {
             range = extras.getInt("range");
         }
         while (moves_to_island < range) {
@@ -60,15 +59,8 @@ public class EchoArrive {
             moves_to_island++;
             return decision;
         }
-
-        if (!done) {
-            decision.put("action", "scan");
-            done = true;
-        } else {
-            decision.put("action", "stop");
-        }
-
+        
+        decision.put("action", "scan");
         return decision;
     }
-
 }
