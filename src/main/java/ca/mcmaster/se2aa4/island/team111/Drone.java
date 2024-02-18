@@ -5,11 +5,11 @@ import org.json.JSONObject;
 public class Drone implements DroneInfo {
     private Battery battery;
     private Position pos = new Position(0, 0);
-    private String direction; //When Direction enum created, will be Direction direction
+    private Compass direction; //When Direction enum created, will be Direction direction
 
-    public Drone(Integer charge, String direction) {
+    public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
-        this.direction = direction;
+        this.direction = direction.toCompass(dir);
     }
 
     @Override
@@ -18,7 +18,7 @@ public class Drone implements DroneInfo {
     }
 
     @Override
-    public String currentDirection() {
+    public Compass currentDirection() {
         return direction;
     }
 

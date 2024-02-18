@@ -25,4 +25,23 @@ public enum Compass
             default: return heading;
         }
     }
+
+    public String toString(Compass heading){
+        switch(heading){
+            case NORTH: return "N";
+            case WEST: return "W";
+            case SOUTH: return "S";
+            case EAST: return "E";
+            default: return "";
+        }
+    }
+    public Compass toCompass(String heading){
+        switch(heading){
+            case "N": return Compass.NORTH;
+            case "W": return Compass.WEST;
+            case "S": return Compass.SOUTH;
+            case "E": return Compass.EAST;
+            default: return Compass.NORTH;
+        }
+    }
 }
