@@ -7,7 +7,7 @@ public class Drone implements DroneInfo {
     private Battery battery;
     private Position pos = new Position(0, 0);
     private Compass direction;
-    private boolean island_found = false;
+    private DroneState current_state = DroneState.FINDING;
     private EchoArrive e1 = new EchoArrive();
     private Information current_info = new Information(0, new JSONObject());
 
@@ -42,18 +42,32 @@ public class Drone implements DroneInfo {
             return decision;
         }
 
-        if (!island_found) {
-            decision = e1.findIsland(current_info.getExtra(), currentDirection());
-            if (decision.get("action") == "heading") {
-                JSONObject parameters = decision.getJSONObject("parameters");
-                direction = direction.StoC(parameters.getString("direction"));
-                island_found = true;
-            }
-            return decision;
-        } else {
-            decision = e1.moveToIsland(current_info.getExtra(), currentDirection());
-            return decision;
+        switch(current_state) {
+            case FINDING:
+                decision = e1.findIsland(current_info.getExtra(), currentDirection());
+                if (decision.get("action") == "heading") {
+                    JSONObject parameters = decision.getJSONObject("parameters");
+                    direction = direction.StoC(parameters.getString("direction"));
+                    current_state = current_state.nextState(current_state);
+                }
+                return decision;
+            case ARRIVING: 
+                decision = e1.moveToIsland(current_info.getExtra(), currentDirection());
+                if (decision.get("action") == "scan") {
+                    current_state = current_state.nextState(current_state);
+                }
+                return decision;
+            case SEARCHING: 
+                System.out.println("Searching for creeks...");
+                current_state.nextState(current_state);
+                decision.put("action", "stop");
+                return decision;
+            case CALCULATING:
+                System.out.println("Calculating closest creek...");
+            
         }
+        return decision;
+
     }
 
     public void displayResults() {
