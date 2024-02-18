@@ -5,9 +5,9 @@ import org.json.JSONObject;
 public class Drone implements DroneInfo {
     private Battery battery;
     private Position pos = new Position(0, 0);
-    private String direction;
+    private Compass direction;
 
-    public Drone(Integer charge, String dir) {
+    public Drone(Integer charge, Compass dir) {
         this.battery = new Battery(charge);
         this.direction = dir;
     }
@@ -19,7 +19,7 @@ public class Drone implements DroneInfo {
 
     @Override
     public String currentDirection() {
-        return direction;
+        return direction.CtoS(direction);
     }
 
     

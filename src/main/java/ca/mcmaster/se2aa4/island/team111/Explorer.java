@@ -29,7 +29,8 @@ public class Explorer implements IExplorerRaid {
         String direction = info.getString("heading");
         dir = direction;
         Integer batteryLevel = info.getInt("budget");
-        drone = new Drone(batteryLevel, direction);
+        Compass compass = Compass.NORTH;
+        drone = new Drone(batteryLevel, compass.StoC(direction));
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
