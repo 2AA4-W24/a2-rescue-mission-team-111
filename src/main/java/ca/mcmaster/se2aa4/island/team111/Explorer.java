@@ -8,7 +8,7 @@ import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener; 
 
-public class Explorer implements IExplorerRaid, Compass {
+public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 
