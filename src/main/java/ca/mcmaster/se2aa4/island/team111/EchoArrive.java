@@ -1,15 +1,16 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+
 import org.json.JSONObject;
 
 public class EchoArrive {
 
-    int moves_to_island = 0;
-    int range;
-    boolean echoing = true;
-    boolean done = false;
-    boolean echoingR = true;
-    String new_dir;
+    private int moves_to_island = 0;
+    private int range;
+    private boolean echoing = true;
+    private boolean done = false;
+    private boolean echoingR = true;
+    private String new_dir;
 
     public JSONObject findIsland(JSONObject extra, String direction) {
 

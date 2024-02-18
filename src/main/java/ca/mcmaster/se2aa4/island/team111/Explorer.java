@@ -15,11 +15,6 @@ public class Explorer implements IExplorerRaid {
     Translator t = new Translator();
     Drone drone;
 
-    public JSONObject extras;
-    EchoArrive e1 = new EchoArrive();
-    String dir;
-    boolean island_found = false;
-
 
     @Override
     public void initialize(String s) {
@@ -27,10 +22,8 @@ public class Explorer implements IExplorerRaid {
         JSONObject info = new JSONObject(new JSONTokener(new StringReader(s)));
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
-        dir = direction;
         Integer batteryLevel = info.getInt("budget");
-        Compass compass = Compass.NORTH;
-        drone = new Drone(batteryLevel, compass.StoC(direction));
+        drone = new Drone(batteryLevel, direction);
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
@@ -39,20 +32,8 @@ public class Explorer implements IExplorerRaid {
     public String takeDecision() {
         JSONObject decision = new JSONObject();
 
-        if (drone.lowBattery()) {
-            logger.info("Low battery!");
-            decision.put("action", "stop");
-        }
+        decision = drone.giveDecision();
 
-        if (island_found) {
-            decision = e1.moveToIsland(extras);
-            return decision.toString();
-        } else {
-            decision = e1.findIsland(extras, dir);
-            if (decision.get("action") == "heading") {
-                island_found = true;
-            }
-        }
         return decision.toString();
     }
 
@@ -67,7 +48,6 @@ public class Explorer implements IExplorerRaid {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
-        extras = extraInfo;
         logger.info("Additional information received: {}", extraInfo);
     }
 
