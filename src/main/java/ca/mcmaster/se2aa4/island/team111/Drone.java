@@ -5,11 +5,11 @@ import org.json.JSONObject;
 public class Drone implements DroneInfo {
     private Battery battery;
     private Position pos = new Position(0, 0);
-    private Compass direction;
+    private String direction;
 
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
-        this.direction = direction.toCompass(dir);
+        this.direction = dir;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class Drone implements DroneInfo {
     }
 
     @Override
-    public Compass currentDirection() {
+    public String currentDirection() {
         return direction;
     }
 
