@@ -1,14 +1,12 @@
 package ca.mcmaster.se2aa4.island.team111;
 
-
 import org.json.JSONObject;
 
 public class Drone implements DroneInfo {
 
-
     private Battery battery;
     private Position pos = new Position(0, 0);
-    private Compass direction; //When Direction enum created, will be Direction direction
+    private Compass direction;
     private boolean island_found = false;
     private EchoArrive e1 = new EchoArrive();
     private Information current_info = new Information(0, new JSONObject());
@@ -25,8 +23,8 @@ public class Drone implements DroneInfo {
     }
 
     @Override
-    public String currentDirection() {
-        return direction.CtoS(direction);
+    public Compass currentDirection() {
+        return direction;
     }
 
     
@@ -47,11 +45,13 @@ public class Drone implements DroneInfo {
         if (!island_found) {
             decision = e1.findIsland(current_info.getExtra(), currentDirection());
             if (decision.get("action") == "heading") {
+                JSONObject parameters = decision.getJSONObject("parameters");
+                direction = direction.StoC(parameters.getString("direction"));
                 island_found = true;
             }
             return decision;
         } else {
-            decision = e1.moveToIsland(current_info.getExtra());
+            decision = e1.moveToIsland(current_info.getExtra(), currentDirection());
             return decision;
         }
     }

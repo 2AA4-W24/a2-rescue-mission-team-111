@@ -7,7 +7,7 @@ public enum Compass
     SOUTH,
     EAST;
 
-    public Compass turnRight(Compass heading){
+    public Compass left(Compass heading){
         switch(heading){
             case NORTH: return Compass.EAST;
             case WEST: return Compass.NORTH;
@@ -16,7 +16,7 @@ public enum Compass
             default: return heading;
         }
     }
-    public Compass turnLeft(Compass heading){
+    public Compass right(Compass heading){
         switch(heading){
             case NORTH: return Compass.WEST;
             case WEST: return Compass.SOUTH;
