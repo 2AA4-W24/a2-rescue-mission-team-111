@@ -13,7 +13,7 @@ public class Drone {
     private Compass direction;
     private DroneState current_state = DroneState.MEASURING;
     private EchoArrive e1 = new EchoArrive();
-    private GridSearcher g1 = new GridSearcher();
+    private GridSearcher g1;
     private AreaFinder a1 = new AreaFinder();
     private Information current_info = new Information(0, new JSONObject());
     private int map_height = -1;
@@ -23,6 +23,7 @@ public class Drone {
         this.battery = new Battery(charge);
         Compass compass = Compass.NORTH;
         this.direction = compass.StoC(dir);
+        this.g1 = new GridSearcher(direction);
     }
 
     public boolean lowBattery() {
@@ -87,10 +88,13 @@ public class Drone {
                 decision = e1.findIsland(current_info.getExtra(), currentDirection());
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
+                    Compass old_dir = direction;
+                    logger.info("RECEIVED: " + parameters.getString("direction"));
                     direction = direction.StoC(parameters.getString("direction"));
+                    pos.changePositionTurn(old_dir, direction);
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos.changePosition(currentDirection());
+                    pos.changePositionFly(currentDirection());
                 }
                 logger.info("x-position: " + pos.getX());
                 logger.info("y-position: " + pos.getY());
@@ -100,22 +104,28 @@ public class Drone {
                 if (decision.get("action") == "scan") {
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos.changePosition(currentDirection());
+                    pos.changePositionFly(currentDirection());
                 }
                 logger.info("x-position: " + pos.getX());
                 logger.info("y-position: " + pos.getY());
                 return decision;
             case SEARCHING: 
                 g1.checkPOI(current_info.getExtra(), pos);
-                // decision = g1.findCreeks(currentDirection(), pos, map_height, map_width);
-                String closest = g1.calculateClosest();
-                logger.info("Closest creek: " + closest);
-                current_state.nextState();
-                decision.put("action", "stop");
+                decision = g1.findCreeks(currentDirection(), pos, map_height, map_width);
+                if (decision.get("action") == "heading") {
+                    JSONObject parameters = decision.getJSONObject("parameters");
+                    Compass old_dir = direction;
+                    direction = direction.StoC(parameters.getString("direction"));
+                    pos.changePositionTurn(old_dir, direction);
+                } else if (decision.get("action") == "fly") {
+                    pos.changePositionFly(direction);
+                }
+                logger.info("x-position: " + pos.getX());
+                logger.info("y-position: " + pos.getY());
+                logger.info("Charge " + battery.getCharge());
                 return decision;
             case CALCULATING:
-                System.out.println("Calculating closest creek...");
-            
+                g1.calculateClosest();
         }
         return decision;
     }

@@ -23,6 +23,16 @@ public enum Compass
         }
     }
 
+    public Compass opposite(){
+        switch(this){
+            case NORTH: return Compass.SOUTH;
+            case WEST: return Compass.EAST;
+            case SOUTH: return Compass.NORTH;
+            case EAST: return Compass.WEST;
+            default: return this;
+        }
+    }
+
     public String CtoS(){
         switch(this){
             case NORTH: return "N";

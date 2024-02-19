@@ -18,7 +18,37 @@ public class Position {
         return y;
     }
 
-    public void changePosition(Compass direction) {
+
+    public void changePositionTurn(Compass old_dir, Compass direction) {
+        switch(direction) {
+            case NORTH: 
+                if (old_dir == Compass.EAST) {
+                    x++; y++;
+                } else {
+                    x--; y++;
+                } break;
+            case WEST: 
+                if (old_dir == Compass.NORTH) {
+                    x--; y++;
+                } else {
+                    x--; y--;
+                } break;
+            case EAST: 
+                if (old_dir == Compass.NORTH) {
+                    x++; y++;
+                } else {
+                    x++; y--;
+                } break;
+            case SOUTH: 
+                if (old_dir == Compass.EAST) {
+                    x++; y--;
+                } else {
+                    x--; y--;
+                } break;
+        }
+    }
+    
+    public void changePositionFly(Compass direction) {
         switch(direction) {
             case NORTH: y++; break;
             case WEST: x--; break;
