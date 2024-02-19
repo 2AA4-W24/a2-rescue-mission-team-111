@@ -18,19 +18,12 @@ public class Position {
         return y;
     }
 
-    public void increaseY(int y) {
-        this.y = y + 1;
-    }
-
-    public void increaseX(int x) {
-        this.x = x + 1;
-    }
-
-    public void decreaseY(int y) {
-        this.y = y - 1;
-    }
-
-    public void decreaseX(int x) {
-        this.x = x - 1;
+    public void changePosition(Compass direction) {
+        switch(direction) {
+            case NORTH: y++; break;
+            case WEST: x--; break;
+            case EAST: x++; break;
+            case SOUTH: y--; break;
+        }
     }
 }  

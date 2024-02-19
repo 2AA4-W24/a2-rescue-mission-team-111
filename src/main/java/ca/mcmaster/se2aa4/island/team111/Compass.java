@@ -4,27 +4,27 @@ public enum Compass
 {
     NORTH, WEST, SOUTH, EAST;
 
-    public Compass left(Compass heading){
-        switch(heading){
+    public Compass left(){
+        switch(this){
             case NORTH: return Compass.EAST;
             case WEST: return Compass.NORTH;
             case SOUTH: return Compass.WEST;
             case EAST: return Compass.SOUTH;
-            default: return heading;
+            default: return this;
         }
     }
-    public Compass right(Compass heading){
-        switch(heading){
+    public Compass right(){
+        switch(this){
             case NORTH: return Compass.WEST;
             case WEST: return Compass.SOUTH;
             case SOUTH: return Compass.EAST;
             case EAST: return Compass.NORTH;
-            default: return heading;
+            default: return this;
         }
     }
 
-    public String CtoS(Compass heading){
-        switch(heading){
+    public String CtoS(){
+        switch(this){
             case NORTH: return "N";
             case WEST: return "W";
             case SOUTH: return "S";

@@ -10,7 +10,7 @@ public class GridSearcher implements POIFinder {
     POI site;
 
     @Override
-    public JSONObject findCreeks() {
+    public JSONObject findCreeks(Compass direction, Position pos, int height, int width) {
         JSONObject decision = new JSONObject();
         decision.put("action", "stop");
         return decision;

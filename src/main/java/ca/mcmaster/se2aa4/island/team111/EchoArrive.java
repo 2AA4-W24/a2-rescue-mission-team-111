@@ -14,26 +14,26 @@ public class EchoArrive {
         JSONObject decision = new JSONObject();
         if (extra == null || extra.isEmpty()) {
             if (echoingR) {
-                Compass echo = direction.right(direction);
+                Compass echo = direction.right();
                 decision.put("action", "echo");
-                decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS(echo)));
+                decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
                 echoingR = !echoingR;
             } else {
-                Compass echo = direction.left(direction);
+                Compass echo = direction.left();
                 decision.put("action", "echo");
-                decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS(echo)));
+                decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
                 echoingR = !echoingR;
             }
 
         } else if (extra.get("found").equals("GROUND")) {
             if (!echoingR) {
-                Compass turn = direction.right(direction);
+                Compass turn = direction.right();
                 decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", turn.CtoS(turn)));
+                decision.put("parameters", (new JSONObject()).put("direction", turn.CtoS()));
             } else {
-                Compass turn = direction.left(direction);
+                Compass turn = direction.left();
                 decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", turn.CtoS(turn)));
+                decision.put("parameters", (new JSONObject()).put("direction", turn.CtoS()));
         }
         } else {
             decision.put("action", "fly");
@@ -46,7 +46,7 @@ public class EchoArrive {
 
         if (echoFirst) {
             decision.put("action", "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS(direction)));
+            decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS()));
             echoFirst = false;
             return decision;
         } 
