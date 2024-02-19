@@ -54,12 +54,12 @@ public class EchoArrive {
         if (!extras.isEmpty()) {
             range = extras.getInt("range");
         }
-        while (moves_to_island < range) {
+        while (moves_to_island <= range) {
             decision.put("action", "fly");
             moves_to_island++;
             return decision;
         }
-        
+
         decision.put("action", "scan");
         return decision;
     }

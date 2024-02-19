@@ -1,8 +1,12 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 public class Drone implements DroneInfo {
+
+    private final Logger logger = LogManager.getLogger();
 
     private Battery battery;
     private Position pos = new Position(0, 0);
@@ -10,6 +14,7 @@ public class Drone implements DroneInfo {
     private DroneState current_state = DroneState.FINDING;
     private EchoArrive e1 = new EchoArrive();
     private Information current_info = new Information(0, new JSONObject());
+    private GridSearcher g1 = new GridSearcher();
 
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
@@ -25,6 +30,10 @@ public class Drone implements DroneInfo {
     @Override
     public Compass currentDirection() {
         return direction;
+    }
+
+    public Position getPosition() {
+        return pos;
     }
     
     public void receiveInfo(Information I) {
@@ -56,7 +65,10 @@ public class Drone implements DroneInfo {
                 }
                 return decision;
             case SEARCHING: 
-                System.out.println("Searching for creeks...");
+                g1.checkPOI(current_info.getExtra(), pos);
+                decision = g1.findCreeks();
+                String closest = g1.calculateClosest();
+                logger.info("Closest creek: " + closest);
                 current_state.nextState(current_state);
                 decision.put("action", "stop");
                 return decision;
