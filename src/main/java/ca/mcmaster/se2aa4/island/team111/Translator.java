@@ -8,5 +8,4 @@ public class Translator {
         Information I = new Information(response.getInt("cost"), response.getJSONObject("extras"));
         return I;
     }
-
 }

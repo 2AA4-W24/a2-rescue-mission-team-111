@@ -8,18 +8,12 @@ import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
 import org.json.JSONTokener; 
 
-public class Explorer implements IExplorerRaid, Compass {
+public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 
     Translator t = new Translator();
     Drone drone;
-
-    public JSONObject extras;
-    EchoArrive e1 = new EchoArrive();
-    String dir;
-    boolean island_found = false;
-
 
     @Override
     public void initialize(String s) {
@@ -27,7 +21,6 @@ public class Explorer implements IExplorerRaid, Compass {
         JSONObject info = new JSONObject(new JSONTokener(new StringReader(s)));
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
-        dir = direction;
         Integer batteryLevel = info.getInt("budget");
         drone = new Drone(batteryLevel, direction);
         logger.info("The drone is facing {}", direction);
@@ -38,20 +31,8 @@ public class Explorer implements IExplorerRaid, Compass {
     public String takeDecision() {
         JSONObject decision = new JSONObject();
 
-        if (drone.lowBattery()) {
-            logger.info("Low battery!");
-            decision.put("action", "stop");
-        }
+        decision = drone.giveDecision();
 
-        if (island_found) {
-            decision = e1.moveToIsland(extras);
-            return decision.toString();
-        } else {
-            decision = e1.findIsland(extras, dir);
-            if (decision.get("action") == "heading") {
-                island_found = true;
-            }
-        }
         return decision.toString();
     }
 
@@ -66,14 +47,11 @@ public class Explorer implements IExplorerRaid, Compass {
         String status = response.getString("status");
         logger.info("The status of the drone is {}", status);
         JSONObject extraInfo = response.getJSONObject("extras");
-        extras = extraInfo;
         logger.info("Additional information received: {}", extraInfo);
     }
-
 
     @Override
     public String deliverFinalReport() {
         return "no creek found";
     }
-
 }

@@ -18,20 +18,42 @@ public class Position {
         return y;
     }
 
-    public void increaseY(int y) {
-        this.y = y + 1;
-    }
 
-    public void increaseX(int x) {
-        this.x = x + 1;
+    public void changePositionTurn(Compass old_dir, Compass direction) {
+        switch(direction) {
+            case NORTH: 
+                if (old_dir == Compass.EAST) {
+                    x++; y++;
+                } else {
+                    x--; y++;
+                } break;
+            case WEST: 
+                if (old_dir == Compass.NORTH) {
+                    x--; y++;
+                } else {
+                    x--; y--;
+                } break;
+            case EAST: 
+                if (old_dir == Compass.NORTH) {
+                    x++; y++;
+                } else {
+                    x++; y--;
+                } break;
+            case SOUTH: 
+                if (old_dir == Compass.EAST) {
+                    x++; y--;
+                } else {
+                    x--; y--;
+                } break;
+        }
     }
-
-    public void decreaseY(int y) {
-        this.y = y - 1;
+    
+    public void changePositionFly(Compass direction) {
+        switch(direction) {
+            case NORTH: y++; break;
+            case WEST: x--; break;
+            case EAST: x++; break;
+            case SOUTH: y--; break;
+        }
     }
-
-    public void decreaseX(int x) {
-        this.x = x - 1;
-    }
-
 }  
