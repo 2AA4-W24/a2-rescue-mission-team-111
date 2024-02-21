@@ -106,6 +106,8 @@ public class Drone {
                 return decision;
             case SEARCHING: 
                 g1.checkPOI(current_info.getExtra(), pos);
+                logger.info("x-position: " + pos.getX());
+                logger.info("y-position: " + pos.getY());
                 decision = g1.findCreeks(direction, pos, current_info, map_height, map_width);
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
@@ -115,18 +117,13 @@ public class Drone {
                 } else if (decision.get("action") == "fly") {
                     pos.changePositionFly(direction);
                 }
-                logger.info("CURRENT DIRECTION: " + direction);
-                logger.info("x-position: " + pos.getX());
-                logger.info("y-position: " + pos.getY());
                 logger.info("CURRENT BATTERY " + battery.getCharge());
                 return decision;
-            case CALCULATING:
-                g1.calculateClosest();
         }
         return decision;
     }
 
-    public void displayResults() {
-        System.out.println("no creek found");
+    public String giveClosest() {
+        return g1.calculateClosest();
     }
 }

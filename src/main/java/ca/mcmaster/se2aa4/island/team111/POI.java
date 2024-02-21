@@ -14,11 +14,7 @@ public class POI {
         return ID;
     }
 
-    public int getXvalue() {
-        return pos.getX();
-    }
-
-    public int getYvalue() {
-        return pos.getY();
+    public Position getPos() {
+        return pos;
     }
 }
