@@ -89,15 +89,12 @@ public class Drone {
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
-                    logger.info("RECEIVED: " + parameters.getString("direction"));
                     direction = direction.StoC(parameters.getString("direction"));
                     pos.changePositionTurn(old_dir, direction);
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
                     pos.changePositionFly(currentDirection());
                 }
-                logger.info("x-position: " + pos.getX());
-                logger.info("y-position: " + pos.getY());
                 return decision;
             case ARRIVING: 
                 decision = e1.moveToIsland(current_info.getExtra(), currentDirection());
@@ -106,12 +103,10 @@ public class Drone {
                 } else if (decision.get("action") == "fly") {
                     pos.changePositionFly(currentDirection());
                 }
-                logger.info("x-position: " + pos.getX());
-                logger.info("y-position: " + pos.getY());
                 return decision;
             case SEARCHING: 
                 g1.checkPOI(current_info.getExtra(), pos);
-                decision = g1.findCreeks(currentDirection(), pos, map_height, map_width);
+                decision = g1.findCreeks(direction, pos, current_info, map_height, map_width);
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
@@ -120,9 +115,10 @@ public class Drone {
                 } else if (decision.get("action") == "fly") {
                     pos.changePositionFly(direction);
                 }
+                logger.info("CURRENT DIRECTION: " + direction);
                 logger.info("x-position: " + pos.getX());
                 logger.info("y-position: " + pos.getY());
-                logger.info("Charge " + battery.getCharge());
+                logger.info("CURRENT BATTERY " + battery.getCharge());
                 return decision;
             case CALCULATING:
                 g1.calculateClosest();
