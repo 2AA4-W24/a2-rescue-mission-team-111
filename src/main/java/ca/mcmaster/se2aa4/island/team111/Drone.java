@@ -11,13 +11,10 @@ public class Drone {
     private Battery battery;
     private Position pos = new Position(0, 0);
     private Compass direction;
-    private DroneState current_state = DroneState.MEASURING;
+    private DroneState current_state = DroneState.FINDING;
     private EchoArrive e1 = new EchoArrive();
     private GridSearcher g1;
-    private AreaFinder a1 = new AreaFinder();
     private Information current_info = new Information(0, new JSONObject());
-    private int map_height = -1;
-    private int map_width = -1;
 
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
@@ -52,39 +49,6 @@ public class Drone {
         }
 
         switch(current_state) {
-            case MEASURING:
-                decision = a1.findHeight(currentDirection());
-                JSONObject extras = current_info.getExtra();
-                if (extras.has("found")) {
-                    if ((extras.getInt("range") == 0)) {
-                        return decision;
-                    } else {
-                        map_height = extras.getInt("range");
-                    }
-                } else {
-                    return decision;
-                }
-
-                decision = a1.findWidth(currentDirection());
-                extras = current_info.getExtra();
-                if (!a1.foundWidth()) {
-                    return decision;
-                } else {
-                    if (extras.has("found")) {
-                        if ((extras.getInt("range") == 0)) {
-                            return decision;
-                        } else {
-                            map_width = extras.getInt("range");
-
-                    } 
-                    } else {
-                        return decision;
-                    }
-                }
-                current_state = current_state.nextState();
-                g1.getDimensions(map_height, map_width);
-                break;
-
             case FINDING:
                 decision = e1.findIsland(current_info.getExtra(), currentDirection());
                 if (decision.get("action") == "heading") {

@@ -18,14 +18,11 @@ public class GridSearcher implements POIFinder {
     private Compass dir_before_turn;
     private Compass new_dir = Compass.NORTH;
 
-    private int map_height;
-    private int map_width;
-
     private boolean scanning = true;
     private boolean flying = false;
     private boolean echoing = true;
+    private boolean secondTurn = false;
 
-    private boolean checkedEdge = false;
     private boolean flyOnce = true;
     private boolean flyTwice = false;
     private boolean half_turn = false;
@@ -37,13 +34,22 @@ public class GridSearcher implements POIFinder {
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
+        site = new POI("NULL", new Position(26, 26));
     }
 
-    public void getDimensions(int height, int width) {
-        this.map_height = height;
-        this.map_width = width;
-        site = new POI("NULL", new Position(map_height/2, map_width/2));
+
+    private String closeEcho(Information I) {
+        JSONObject extra = I.getExtra();
+        if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 2) {
+            return "Now";
+        } else if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 3) {
+            return "Early";
+        } else {
+            return "Good";
+        }
+
     }
+
 
     @Override
     public JSONObject findCreeks(Compass direction, Position pos, Information I) {
@@ -59,11 +65,26 @@ public class GridSearcher implements POIFinder {
             if (checkTurn(I)) {
                 decision.put("action", "echo");
                 decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS()));
-            } else if (checkEdges(pos) && !checkedEdge) {
-                checkedEdge = true;
-                decision = makeTurns(direction, I);
             } else if (echoCheck(I)) {
-                decision = makeTurns(direction, I);
+                if (closeEcho(I).equals("Now")) {
+                    dir_before_turn = direction;
+                    decision.put("action", "heading");
+                    decision.put("parameters", (new JSONObject()).put("direction", initial_dir.CtoS()));
+                    secondTurn = true;
+                    return decision;
+                } else if (closeEcho(I).equals("Early")) {
+                    flyOnce = false;
+                    flyTwice = true;
+                    decision = makeTurns(direction, I);
+                } else {
+                    decision = makeTurns(direction, I);
+                }
+            } else if (secondTurn) {
+                new_dir = dir_before_turn.opposite();
+                decision.put("action", "heading");
+                decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
+                secondTurn = false;
+                return decision;
             } else if (!done) {
                 decision = makeTurns(direction, I);
             } else {
@@ -73,22 +94,12 @@ public class GridSearcher implements POIFinder {
                 } else {
                     decision.put("action", "fly");
                     scanning = true;
-                    checkedEdge = false;
                 }
             }
 
         return decision;
     }
-    
-    private boolean checkEdges(Position pos) {
-        if (Math.abs(pos.getY()) > map_height-4 || Math.abs(pos.getY()) < 4) {
-            return true;
-        } 
-        if (Math.abs(pos.getX()) > map_width-4 || Math.abs(pos.getX()) < 4) {
-            return true;
-        }
-        return false;
-    }
+
 
     private boolean echoCheck(Information I) {
         JSONObject extra = I.getExtra();
@@ -130,6 +141,7 @@ public class GridSearcher implements POIFinder {
             decision.put("action", "fly");
             flyTwice = false;
             half_turn = true;
+            done = false;
             return decision;
         }
          if (half_turn) {
