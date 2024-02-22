@@ -19,41 +19,47 @@ public class Position {
     }
 
 
-    public void changePositionTurn(Compass old_dir, Compass direction) {
+    public Position changePositionTurn(Compass old_dir, Compass direction) {
+        int x = this.getX();
+        int y = this.getY();
         switch(direction) {
             case NORTH: 
                 if (old_dir == Compass.EAST) {
-                    x++; y++;
+                    return new Position(x += 1, y += 1);
                 } else {
-                    x--; y++;
-                } break;
+                    return new Position(x -= 1, y += 1);
+                } 
             case WEST: 
                 if (old_dir == Compass.NORTH) {
-                    x--; y++;
+                    return new Position(x -= 1, y += 1);
                 } else {
-                    x--; y--;
-                } break;
+                    return new Position(x -= 1, y -= 1);
+                }
             case EAST: 
                 if (old_dir == Compass.NORTH) {
-                    x++; y++;
+                    return new Position(x += 1, y += 1);
                 } else {
-                    x++; y--;
-                } break;
+                    return new Position(x += 1, y -= 1);
+                }
             case SOUTH: 
                 if (old_dir == Compass.EAST) {
-                    x++; y--;
+                    return new Position(x += 1, y -= 1);
                 } else {
-                    x--; y--;
-                } break;
+                    return new Position(x -= 1, y -= 1);
+                }
+            default: return this;
         }
     }
     
-    public void changePositionFly(Compass direction) {
+    public Position changePositionFly(Compass direction) {
+        int x = this.getX();
+        int y = this.getY();
         switch(direction) {
-            case NORTH: y++; break;
-            case WEST: x--; break;
-            case EAST: x++; break;
-            case SOUTH: y--; break;
+            case NORTH: return new Position(x, y += 1);
+            case WEST: return new Position(x -= 1, y);
+            case EAST: return new Position(x += 1, y);
+            case SOUTH: return new Position(x, y -= 1);
+            default: return this;
         }
     }
 }  

@@ -12,7 +12,7 @@ public class GridSearcher implements POIFinder {
     private final Logger logger = LogManager.getLogger();
 
     private List<POI> creeks = new ArrayList<POI>();
-    private POI site;
+    private POI site = new POI("NULL", new Position(25, 25));
 
     private Compass initial_dir;
     private Compass dir_before_turn;
@@ -187,16 +187,20 @@ public class GridSearcher implements POIFinder {
 
     @Override
     public String calculateClosest() {
-        site = new POI("BLAH", new Position(557, 502));
 
         POI closest_creek = creeks.get(0);
 
-        for (int i = 0; i<creeks.size(); i++) {
+        for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
+            logger.info("CHAMPION ID: " + closest_creek.getID());
+            logger.info("CHAMPION DISTANCE: " + getDistance(closest_creek));
+            logger.info("CHALLENGER ID: " + this_creek.getID());
+            logger.info("CHALLENGER DISTANCE: " + getDistance(this_creek));
             if (getDistance(this_creek) < getDistance(closest_creek)) {
                 closest_creek = this_creek;
             }
         }
+        logger.info("EMERGENCY ID: " + site.getID());
 
         return closest_creek.getID();
     }
@@ -204,8 +208,6 @@ public class GridSearcher implements POIFinder {
     private double getDistance(POI creek) {
         Position site_pos = site.getPos();
         Position creek_pos = creek.getPos();
-        logger.info("CREEK X-POSITION: " + creek_pos.getX());
-        logger.info("CREEK Y-POSITION: " + creek_pos.getY());
         int x = Math.abs(site_pos.getX()-creek_pos.getX());
         int y = Math.abs(site_pos.getY()-creek_pos.getY());
         double distance = Math.sqrt((x*x) + (y*y));
@@ -219,8 +221,6 @@ public class GridSearcher implements POIFinder {
             if (!c.isEmpty()) {
                 for (int i = 0; i<c.length(); i++) {
                     String ID = c.getString(i);
-                    logger.info("ADDING CREEK WITH X-VALUE: " + pos.getX());
-                    logger.info("ADDING CREEK WITH Y-VALUE: " + pos.getY());
                     POI newPOI = new POI(ID, pos);
                     creeks.add(newPOI);
                 }
@@ -236,6 +236,8 @@ public class GridSearcher implements POIFinder {
             }
         }
     }
+
+
 
 
 }

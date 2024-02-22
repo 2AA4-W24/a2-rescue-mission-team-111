@@ -90,10 +90,10 @@ public class Drone {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
                     direction = direction.StoC(parameters.getString("direction"));
-                    pos.changePositionTurn(old_dir, direction);
+                    pos = pos.changePositionTurn(old_dir, direction);
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos.changePositionFly(currentDirection());
+                    pos = pos.changePositionFly(currentDirection());
                 }
                 return decision;
             case ARRIVING: 
@@ -101,21 +101,29 @@ public class Drone {
                 if (decision.get("action") == "scan") {
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos.changePositionFly(currentDirection());
+                    pos = pos.changePositionFly(currentDirection());
+                } else if (decision.get("action") == "heading") {
+                    JSONObject parameters = decision.getJSONObject("parameters");
+                    Compass old_dir = direction;
+                    direction = direction.StoC(parameters.getString("direction"));
+                    pos = pos.changePositionTurn(old_dir, direction);
                 }
                 return decision;
             case SEARCHING: 
-                g1.checkPOI(current_info.getExtra(), pos);
+                Position current_pos = pos;
+                if (current_info.getExtra().has("creeks")) {
+                    g1.checkPOI(current_info.getExtra(), current_pos);
+                }
                 logger.info("x-position: " + pos.getX());
                 logger.info("y-position: " + pos.getY());
-                decision = g1.findCreeks(direction, pos, current_info, map_height, map_width);
+                decision = g1.findCreeks(direction, current_pos, current_info, map_height, map_width);
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
                     direction = direction.StoC(parameters.getString("direction"));
-                    pos.changePositionTurn(old_dir, direction);
+                    pos = pos.changePositionTurn(old_dir, direction);
                 } else if (decision.get("action") == "fly") {
-                    pos.changePositionFly(direction);
+                    pos = pos.changePositionFly(direction);
                 }
                 logger.info("CURRENT BATTERY " + battery.getCharge());
                 return decision;
