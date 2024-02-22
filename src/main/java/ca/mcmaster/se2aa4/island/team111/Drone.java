@@ -82,6 +82,7 @@ public class Drone {
                     }
                 }
                 current_state = current_state.nextState();
+                g1.getDimensions(map_height, map_width);
                 break;
 
             case FINDING:
@@ -116,7 +117,7 @@ public class Drone {
                 }
                 logger.info("x-position: " + pos.getX());
                 logger.info("y-position: " + pos.getY());
-                decision = g1.findCreeks(direction, current_pos, current_info, map_height, map_width);
+                decision = g1.findCreeks(direction, current_pos, current_info);
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
