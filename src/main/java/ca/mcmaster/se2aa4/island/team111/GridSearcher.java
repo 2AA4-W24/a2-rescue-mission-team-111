@@ -11,8 +11,8 @@ public class GridSearcher implements POIFinder {
 
     private final Logger logger = LogManager.getLogger();
 
-    private List<POI> creeks = new ArrayList<POI>();
-    private POI site = null;
+    public List<POI> creeks = new ArrayList<POI>();
+    public POI site = null;
 
     private Compass initial_dir;
     private Compass dir_before_turn;
