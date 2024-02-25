@@ -7,8 +7,8 @@ import org.json.JSONObject;
 
 public class GridSearcher implements POIFinder {
 
-    private List<POI> creeks = new ArrayList<POI>();
-    private POI site = null;
+    public List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
+    public POI site = new POI("NULL", new Position(26, -26));
 
     private Compass initial_dir;
     private Compass dir_before_turn;
@@ -31,7 +31,6 @@ public class GridSearcher implements POIFinder {
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
-        site = new POI("NULL", new Position(26, 26));
     }
 
 
