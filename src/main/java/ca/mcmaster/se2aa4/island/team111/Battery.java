@@ -12,6 +12,6 @@ public class Battery {
     }
 
     public boolean isLow() {
-        return charge < 30; //25 magic number, deal with it later
+        return charge < 30; //30 magic number, deal with it later
     }
 }
