@@ -22,7 +22,4 @@ public class POI {
         return pos.getY();
     }
 
-    public Position getPos() {
-        return pos;
-    }
 }

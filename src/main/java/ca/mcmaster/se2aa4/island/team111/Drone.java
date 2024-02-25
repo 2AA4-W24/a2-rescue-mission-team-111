@@ -1,12 +1,9 @@
 package ca.mcmaster.se2aa4.island.team111;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 import org.json.JSONObject;
 
 public class Drone {
-
-    private final Logger logger = LogManager.getLogger();
 
     private Battery battery;
     private Position pos = new Position(0, 0);
@@ -22,19 +19,8 @@ public class Drone {
         this.direction = compass.StoC(dir);
         this.g1 = new GridSearcher(direction);
     }
-
-    public boolean lowBattery() {
-        return battery.isLow();
-    }
-
-    public Compass currentDirection() {
-        return direction;
-    }
-
-    public Position getPosition() {
-        return pos;
-    }
     
+    //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         current_info = I;
         battery.depleteCharge(I.getCost());
@@ -43,30 +29,35 @@ public class Drone {
     public JSONObject giveDecision() {
         JSONObject decision = new JSONObject();
 
-        if (this.lowBattery()) {
+        //If battery is low, stop
+        if (battery.isLow()) {
             decision.put("action", "stop");
             return decision;
         }
 
+        //According to current state, execute methods
         switch(current_state) {
             case FINDING:
-                decision = e1.findIsland(current_info.getExtra(), currentDirection());
+                decision = e1.findIsland(current_info.getExtra(), direction);
                 if (decision.get("action") == "heading") {
+                    //If we turn when finding island, then go to next phase of exploration
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
                     direction = direction.StoC(parameters.getString("direction"));
                     pos = pos.changePositionTurn(old_dir, direction);
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos = pos.changePositionFly(currentDirection());
+                    pos = pos.changePositionFly(direction);
                 }
+                //Update position according to command returned
                 return decision;
             case ARRIVING: 
-                decision = e1.moveToIsland(current_info.getExtra(), currentDirection());
+                //Start moving to island and only move to next phase if we get scan back
+                decision = e1.moveToIsland(current_info.getExtra(), direction);
                 if (decision.get("action") == "scan") {
                     current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
-                    pos = pos.changePositionFly(currentDirection());
+                    pos = pos.changePositionFly(direction);
                 } else if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
@@ -76,12 +67,8 @@ public class Drone {
                 return decision;
             case SEARCHING: 
                 Position current_pos = pos;
-                if (current_info.getExtra().has("creeks")) {
-                    g1.checkPOI(current_info.getExtra(), current_pos);
-                }
-                logger.info("x-position: " + pos.getX());
-                logger.info("y-position: " + pos.getY());
-                decision = g1.findCreeks(direction, current_pos, current_info);
+                g1.checkPOI(current_info.getExtra(), current_pos); //Check if you got a POI from information
+                decision = g1.findCreeks(direction, current_pos, current_info); //Find POIs
                 if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
@@ -90,7 +77,6 @@ public class Drone {
                 } else if (decision.get("action") == "fly") {
                     pos = pos.changePositionFly(direction);
                 }
-                logger.info("CURRENT BATTERY " + battery.getCharge());
                 return decision;
         }
         return decision;

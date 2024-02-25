@@ -2,14 +2,10 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import java.util.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GridSearcher implements POIFinder {
-
-    private final Logger logger = LogManager.getLogger();
 
     private List<POI> creeks = new ArrayList<POI>();
     private POI site = null;
@@ -18,6 +14,7 @@ public class GridSearcher implements POIFinder {
     private Compass dir_before_turn;
     private Compass new_dir = Compass.NORTH;
 
+    //Do we need to reduce number of boolean attributes? If so, how to switch between decisions every takeDecision() loop?
     private boolean scanning = true;
     private boolean flying = false;
     private boolean echoing = true;
@@ -38,18 +35,18 @@ public class GridSearcher implements POIFinder {
     }
 
 
+    //Check if we're too close to the edge
     private String closeEcho(Information I) {
         JSONObject extra = I.getExtra();
         if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 2) {
             return "Now";
         } else if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 3) {
-            return "Early";
+            return "Early"; //Likely need to change this 
         } else {
             return "Good";
         }
 
     }
-
 
     @Override
     public JSONObject findCreeks(Compass direction, Position pos, Information I) {
@@ -60,6 +57,7 @@ public class GridSearcher implements POIFinder {
         return decision;
     }
 
+    //Grid-searching algorithm
     private JSONObject firstSearch(Compass direction, Position pos, Information I) {
         JSONObject decision = new JSONObject();
             if (checkTurn(I)) {
@@ -100,7 +98,7 @@ public class GridSearcher implements POIFinder {
         return decision;
     }
 
-
+    //check if there's no more land in front of you
     private boolean echoCheck(Information I) {
         JSONObject extra = I.getExtra();
         if (extra.has("found")) {
@@ -111,13 +109,13 @@ public class GridSearcher implements POIFinder {
         return false;
     }
 
+    //If we're on ocean-only, check if we can turn
     private boolean checkTurn(Information I) {
         JSONObject extra = I.getExtra();
 
         if (extra.has("biomes")) {
             JSONArray biomes = extra.getJSONArray("biomes");
             for (int i = 0; i<biomes.length(); i++) {
-                logger.info("BIOME " + biomes.get(i));
                 if (!(biomes.get(i).equals("OCEAN"))) {
                     return false;
                 }
@@ -128,6 +126,10 @@ public class GridSearcher implements POIFinder {
 
     }
 
+    //Make appropriate turns to efficiently turn instead of leaving gaps in the searching of the map.
+    //We do this by making multiple turns
+    //Before making this turns, we fly 1-2 times so we don't miss anything when turning
+    //We make 4 turns in total to efficiently turn
     private JSONObject makeTurns(Compass direction, Information I) {
         JSONObject decision = new JSONObject();
 
@@ -145,7 +147,6 @@ public class GridSearcher implements POIFinder {
             return decision;
         }
          if (half_turn) {
-            logger.info("TURN 1");
             decision.put("action", "heading");
             decision.put("parameters", (new JSONObject()).put("direction", initial_dir.CtoS()));
             half_turn = false;
@@ -157,21 +158,18 @@ public class GridSearcher implements POIFinder {
             flying = false;
             full_turn = true;
         } else if (full_turn) {
-            logger.info("TURN 2");
             new_dir = dir_before_turn.opposite();
             decision.put("action", "heading");
             decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
             full_turn = false;
             recenter = true;
         } else if (recenter) {
-            logger.info("TURN 3");
             Compass opposite_dir = initial_dir.opposite();
             decision.put("action", "heading");
             decision.put("parameters", (new JSONObject()).put("direction", opposite_dir.CtoS()));
             recenter = false;
             second_recenter = true;
         } else if (second_recenter) {
-            logger.info("TURN 4");
             decision.put("action", "heading");
             decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
             second_recenter = false;
@@ -205,32 +203,28 @@ public class GridSearcher implements POIFinder {
 
         POI closest_creek = creeks.get(0);
 
+        //Closest creek is the creek with closest distance to the site
         for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
-            logger.info("CHAMPION ID: " + closest_creek.getID());
-            logger.info("CHAMPION DISTANCE: " + getDistance(closest_creek));
-            logger.info("CHALLENGER ID: " + this_creek.getID());
-            logger.info("CHALLENGER DISTANCE: " + getDistance(this_creek));
             if (getDistance(this_creek) < getDistance(closest_creek)) {
                 closest_creek = this_creek;
             }
         }
-        logger.info("EMERGENCY ID: " + site.getID());
 
         return closest_creek.getID();
     }
 
+    //Uses pythagorean mathematics to check distance
     private double getDistance(POI creek) {
-        Position site_pos = site.getPos();
-        Position creek_pos = creek.getPos();
-        int x = Math.abs(site_pos.getX()-creek_pos.getX());
-        int y = Math.abs(site_pos.getY()-creek_pos.getY());
+        int x = Math.abs(site.getXvalue()-creek.getXvalue());
+        int y = Math.abs(site.getYvalue()-creek.getYvalue());
         double distance = Math.sqrt((x*x) + (y*y));
         return distance;
     }
 
     @Override
     public void checkPOI(JSONObject extra, Position pos) {
+        //if the result of a scan has creeks in it, add them to the list. Same with sites.
         if (extra.has("creeks")) {
             JSONArray c = extra.getJSONArray("creeks");
             if (!c.isEmpty()) {

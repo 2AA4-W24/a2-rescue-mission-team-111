@@ -12,7 +12,6 @@ public class EchoArrive {
 
     private boolean echoFirst = true;
     private boolean echoingR = true;
-    private boolean done = false;
     private boolean found_ground = false;
 
     private boolean firstTurn = true;
@@ -21,7 +20,8 @@ public class EchoArrive {
     public JSONObject findIsland(JSONObject extra, Compass direction) {
 
         JSONObject decision = new JSONObject();
-        if (extra == null || extra.isEmpty() && !found_ground) {
+        if (extra == null || extra.isEmpty() && !found_ground) { //If we just flew and didn't find ground yet
+                //Keep echoing left and right
                 if (echoingR) {
                     echo = direction.right();
                     decision.put("action", "echo");
@@ -35,11 +35,11 @@ public class EchoArrive {
                 }
         } else if (extra.has("found") && extra.get("found").equals("GROUND")) {
             found_ground = true;
-            decision.put("action", "fly");
+            decision.put("action", "fly"); //If we found ground, fly one ahead
         } else if (found_ground) {
             previous_dir = direction;
             decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
+            decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS())); //Turn towards the direction that gave us ground
         } else {
             decision.put("action", "fly");
         }
@@ -50,6 +50,7 @@ public class EchoArrive {
     public JSONObject moveToIsland(JSONObject extras, Compass direction) {
         JSONObject decision = new JSONObject();
 
+        //Algorithm completes an efficient turn instead of missing the first column/row of the island
         if (firstTurn) {
             Compass fullTurn = previous_dir.opposite();
             decision.put("action", "heading");
@@ -64,6 +65,7 @@ public class EchoArrive {
             return decision;
         }
 
+        //Echo to see how far away the island is
         if (echoFirst) {
             decision.put("action", "echo");
             decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS()));
@@ -71,21 +73,21 @@ public class EchoArrive {
             return decision;
         } 
 
+        //Store the distance of the island from previous echo in range
         if (!extras.isEmpty()) {
             range = extras.getInt("range");
         }
+
+        //fly until you arrive at island
         while (moves_to_island < range) {
             decision.put("action", "fly");
             moves_to_island++;
             return decision;
         }
 
+        //scan when reached island
         decision.put("action", "scan");
         return decision;
-    }
-
-    public boolean askIfDone() {
-        return done;
     }
 
 }

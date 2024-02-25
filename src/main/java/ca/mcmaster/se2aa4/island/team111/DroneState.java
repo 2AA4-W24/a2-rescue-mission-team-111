@@ -1,5 +1,6 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+//Exploration phases
 public enum DroneState {
     FINDING, ARRIVING, SEARCHING;
 

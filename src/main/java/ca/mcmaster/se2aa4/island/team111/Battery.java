@@ -7,10 +7,6 @@ public class Battery {
         this.charge = charge;
     }
 
-    public int getCharge() {
-        return charge;
-    }
-
     public void depleteCharge(int cost) {
         charge -= cost;
     }

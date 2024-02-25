@@ -33,6 +33,7 @@ public enum Compass
         }
     }
 
+    //Compass to String
     public String CtoS(){
         switch(this){
             case NORTH: return "N";
@@ -42,6 +43,8 @@ public enum Compass
             default: return "";
         }
     }
+
+    //String to Compass
     public Compass StoC(String heading){
         switch(heading){
             case "N": return Compass.NORTH;
