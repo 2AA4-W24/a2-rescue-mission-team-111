@@ -7,15 +7,11 @@ public class Battery {
         this.charge = charge;
     }
 
-    public int getCharge() {
-        return charge;
-    }
-
     public void depleteCharge(int cost) {
         charge -= cost;
     }
 
     public boolean isLow() {
-        return charge < 25; //25 magic number, deal with it later
+        return charge < 30; //30 magic number, deal with it later
     }
 }

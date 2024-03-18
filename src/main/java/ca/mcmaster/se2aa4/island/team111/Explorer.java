@@ -12,8 +12,8 @@ public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 
-    Translator t = new Translator();
-    Drone drone;
+    private Translator t = new Translator();
+    public Drone drone;
 
     @Override
     public void initialize(String s) {
@@ -52,6 +52,8 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        return "no creek found";
+        String closest = drone.giveClosest();
+        logger.info("CLOSEST CREEK: " + closest);
+        return closest;
     }
 }

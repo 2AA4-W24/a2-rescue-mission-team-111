@@ -1,15 +1,14 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+//Exploration phases
 public enum DroneState {
-    MEASURING, FINDING, ARRIVING, SEARCHING, CALCULATING;
+    FINDING, ARRIVING, SEARCHING;
 
     public DroneState nextState() {
         switch (this) {
-            case MEASURING: return FINDING;
             case FINDING: return ARRIVING;
             case ARRIVING: return SEARCHING;
-            case SEARCHING: return CALCULATING;
-            default: return CALCULATING;
+            default: return SEARCHING;
         }
     }
 }
