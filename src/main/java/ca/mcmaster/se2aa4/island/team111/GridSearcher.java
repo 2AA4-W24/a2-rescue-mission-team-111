@@ -213,6 +213,10 @@ public class GridSearcher implements POIFinder {
         return closest_creek.getID();
     }
 
+    public double getDistanceTest(POI creek){
+        return getDistance(creek);
+    }
+
     //Uses pythagorean mathematics to check distance
     private double getDistance(POI creek) {
         int x = Math.abs(site.getXvalue()-creek.getXvalue());
