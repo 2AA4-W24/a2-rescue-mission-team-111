@@ -23,6 +23,7 @@ public class Drone {
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         current_info = I;
+        g1.updateInfo(I);
         battery.depleteCharge(I.getCost());
     }
 

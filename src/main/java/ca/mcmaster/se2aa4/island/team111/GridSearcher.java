@@ -7,12 +7,18 @@ import org.json.JSONObject;
 
 public class GridSearcher implements POIFinder {
 
+    private GridSearchState currentState;
+    private Information currentInfo;
+    private JSONObject currentDecision;
+
     public List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
     public POI site = new POI("NULL", new Position(26, -26));
 
     private Compass initial_dir;
     private Compass dir_before_turn;
     private Compass new_dir = Compass.NORTH;
+
+    private int range = 0;
 
     //Do we need to reduce number of boolean attributes? If so, how to switch between decisions every takeDecision() loop?
     private boolean scanning = true;
@@ -28,11 +34,53 @@ public class GridSearcher implements POIFinder {
     private boolean second_recenter = false;
     private boolean done = true;
 
-
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
+        this.currentState = new ScanningState();
     }
 
+    public void updateInfo(Information I) {
+        this.currentInfo = I;
+    }
+
+    public Information getCurrentInfo() {
+        return currentInfo;
+    }
+
+
+    public void setState(GridSearchState gState) {
+        currentState = gState;
+    }
+
+
+    public Compass getDirBeforeTurn() {
+        return dir_before_turn;
+    }
+
+    public Compass getInitialDir() {
+        return initial_dir;
+    }
+
+    public int getRange() {
+        return range;
+    }
+
+    public void setRange(int new_range) {
+        this.range = new_range;
+    }
+
+    public void giveDecision(JSONObject decision) {
+        currentDecision = decision;
+    }
+
+    @Override
+    public JSONObject findCreeks(Compass direction, Position pos, Information I) {
+        JSONObject decision = new JSONObject();
+
+        decision = firstSearch(direction, pos, I);
+        
+        return decision;
+    }
 
     //Check if we're too close to the edge
     private String closeEcho(Information I) {
@@ -45,15 +93,6 @@ public class GridSearcher implements POIFinder {
             return "Good";
         }
 
-    }
-
-    @Override
-    public JSONObject findCreeks(Compass direction, Position pos, Information I) {
-        JSONObject decision = new JSONObject();
-
-        decision = firstSearch(direction, pos, I);
-        
-        return decision;
     }
 
     //Grid-searching algorithm
@@ -244,4 +283,5 @@ public class GridSearcher implements POIFinder {
             }
         }
     }
+
 }
