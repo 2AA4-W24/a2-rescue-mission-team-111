@@ -50,19 +50,18 @@ public class Drone {
                     Compass old_dir = direction;
                     direction = direction.StoC(parameters.getString("direction"));
                     pos = pos.changePositionTurn(old_dir, direction);
-                    current_state = current_state.nextState();
                 } else if (decision.get("action") == "fly") {
                     pos = pos.changePositionFly(direction);
+                }
+                if (e1.findingDone()) {
+                    current_state = current_state.nextState();
                 }
                 //Update position according to command returned
                 return decision;
             case ARRIVING: 
                 //Start moving to island and only move to next phase if we get scan back
                 decision = e1.moveToIsland(current_info.getExtra(), direction);
-                if (decision.get("action") == "scan") {
-                    current_state = current_state.nextState();
-                    g1.setDirBeforeTurn(direction);
-                } else if (decision.get("action") == "fly") {
+                if (decision.get("action") == "fly") {
                     pos = pos.changePositionFly(direction);
                 } else if (decision.get("action") == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
@@ -70,6 +69,10 @@ public class Drone {
                     logger.info("NEW DIR: " + direction.CtoS());
                     direction = direction.StoC(parameters.getString("direction"));
                     pos = pos.changePositionTurn(old_dir, direction);
+                }
+                if (e1.arrivingDone()) {
+                    current_state = current_state.nextState();
+                    g1.setDirBeforeTurn(direction);
                 }
                 return decision;
             case SEARCHING:

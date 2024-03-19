@@ -17,6 +17,9 @@ public class EchoArrive {
     private boolean firstTurn = true;
     private boolean secondTurn = false;
 
+    private boolean finding_done = false;
+    private boolean arriving_done = false;
+
     public JSONObject findIsland(JSONObject extra, Compass direction) {
 
         JSONObject decision = new JSONObject();
@@ -44,6 +47,9 @@ public class EchoArrive {
             decision.put("action", "fly");
         }
         
+        if (decision.get("action") == "heading") {
+            finding_done = true;
+        }
         return decision;
     }
 
@@ -87,7 +93,17 @@ public class EchoArrive {
 
         //scan when reached island
         decision.put("action", "scan");
+        arriving_done = true;
         return decision;
     }
+
+    public boolean findingDone() {
+        return finding_done;
+    }
+
+    public boolean arrivingDone() {
+        return arriving_done;
+    }
+
 
 }
