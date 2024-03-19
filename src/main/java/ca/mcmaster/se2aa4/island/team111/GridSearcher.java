@@ -2,46 +2,43 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import java.util.*;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GridSearcher {
 
     private GridSearchState currentState = new FlyingState();
     private Information currentInfo;
+    private Position currentPos;
 
     public List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
     public POI site = new POI("NULL", new Position(26, -26));
 
     private Compass initial_dir;
-    private Compass dir_before_turn = Compass.SOUTH;
+    private Compass dir_before_turn;
 
     private int range = 0;
-    private int maxRange = -1;
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
         this.currentState = new ScanningState();
     }
 
-    public int getMaxRange() {
-        return maxRange;
-    } 
-
-    public void decrementMaxRange() {
-        maxRange--;
-    }
-
-    public void setMaxRange(int range) {
-        maxRange = range;
-    }
-
-    public void updateInfo(Information I) {
+    public void updateInfo(Information I, Position pos) {
         this.currentInfo = I;
+        this.currentPos = pos;
     }
 
     public Information getCurrentInfo() {
         return currentInfo;
+    }
+
+    public void addCreek(String id) {
+        POI newPOI = new POI(id, currentPos);
+        creeks.add(newPOI);
+    }
+
+    public void addSite(String id) {
+        site = new POI(id, currentPos);
     }
 
 
@@ -75,7 +72,7 @@ public class GridSearcher {
     }
 
 
-    public JSONObject findCreeks(Compass direction, Position pos, Information I) {
+    public JSONObject performSearch(Compass direction, Position pos, Information I) {
 
         JSONObject decision = new JSONObject();
         
@@ -87,11 +84,9 @@ public class GridSearcher {
     public String calculateClosest() {
 
         POI closest_creek = creeks.get(0);
-
-        //Closest creek is the creek with closest distance to the site
         for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
-            if (getDistance(this_creek) < getDistance(closest_creek)) {
+            if (getDistanceToSite(this_creek) < getDistanceToSite(closest_creek)) {
                 closest_creek = this_creek;
             }
         }
@@ -99,35 +94,11 @@ public class GridSearcher {
         return closest_creek.getID();
     }
 
-    //Uses pythagorean mathematics to check distance
-    private double getDistance(POI creek) {
+    private double getDistanceToSite(POI creek) {
         int x = Math.abs(site.getXvalue()-creek.getXvalue());
         int y = Math.abs(site.getYvalue()-creek.getYvalue());
         double distance = Math.sqrt((x*x) + (y*y));
         return distance;
-    }
-
-    public void checkPOI(JSONObject extra, Position pos) {
-        //if the result of a scan has creeks in it, add them to the list. Same with sites.
-        if (extra.has("creeks")) {
-            JSONArray c = extra.getJSONArray("creeks");
-            if (!c.isEmpty()) {
-                for (int i = 0; i<c.length(); i++) {
-                    String ID = c.getString(i);
-                    POI newPOI = new POI(ID, pos);
-                    creeks.add(newPOI);
-                }
-            }
-        }
-        if (extra.has("sites")) {
-            JSONArray sites = extra.getJSONArray("sites");
-            if (!sites.isEmpty()) {
-                for (int i = 0; i<sites.length(); i++) {
-                    String ID = sites.getString(i);
-                    site = new POI(ID, pos);
-                }
-            }
-        }
     }
 
 }
