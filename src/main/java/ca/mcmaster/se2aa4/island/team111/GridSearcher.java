@@ -5,38 +5,35 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class GridSearcher implements POIFinder {
+public class GridSearcher {
 
-    private GridSearchState currentState;
+    private GridSearchState currentState = new FlyingState();
     private Information currentInfo;
-    private JSONObject currentDecision;
 
     public List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
     public POI site = new POI("NULL", new Position(26, -26));
 
     private Compass initial_dir;
-    private Compass dir_before_turn;
-    private Compass new_dir = Compass.NORTH;
+    private Compass dir_before_turn = Compass.SOUTH;
 
     private int range = 0;
-
-    //Do we need to reduce number of boolean attributes? If so, how to switch between decisions every takeDecision() loop?
-    private boolean scanning = true;
-    private boolean flying = false;
-    private boolean echoing = true;
-    private boolean secondTurn = false;
-
-    private boolean flyOnce = true;
-    private boolean flyTwice = false;
-    private boolean half_turn = false;
-    private boolean full_turn = false;
-    private boolean recenter = false;
-    private boolean second_recenter = false;
-    private boolean done = true;
+    private int maxRange = -1;
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
         this.currentState = new ScanningState();
+    }
+
+    public int getMaxRange() {
+        return maxRange;
+    } 
+
+    public void decrementMaxRange() {
+        maxRange--;
+    }
+
+    public void setMaxRange(int range) {
+        maxRange = range;
     }
 
     public void updateInfo(Information I) {
@@ -69,174 +66,24 @@ public class GridSearcher implements POIFinder {
         this.range = new_range;
     }
 
-    public void giveDecision(JSONObject decision) {
-        currentDecision = decision;
+    public void toggleDirBeforeTurn() {
+        dir_before_turn = dir_before_turn.opposite();
     }
 
-    @Override
+    public void setDirBeforeTurn(Compass dir) {
+        dir_before_turn = dir;
+    }
+
+
     public JSONObject findCreeks(Compass direction, Position pos, Information I) {
-        JSONObject decision = new JSONObject();
 
-        decision = firstSearch(direction, pos, I);
+        JSONObject decision = new JSONObject();
         
-        return decision;
-    }
-
-    //Check if we're too close to the edge
-    private String closeEcho(Information I) {
-        JSONObject extra = I.getExtra();
-        if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 2) {
-            return "Now";
-        } else if (extra.getString("found").equals("OUT_OF_RANGE") && extra.getInt("range") < 3) {
-            return "Early"; //Likely need to change this 
-        } else {
-            return "Good";
-        }
-
-    }
-
-    //Grid-searching algorithm
-    private JSONObject firstSearch(Compass direction, Position pos, Information I) {
-        JSONObject decision = new JSONObject();
-            if (checkTurn(I)) {
-                decision.put("action", "echo");
-                decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS()));
-            } else if (echoCheck(I)) {
-                if (closeEcho(I).equals("Now")) {
-                    dir_before_turn = direction;
-                    decision.put("action", "heading");
-                    decision.put("parameters", (new JSONObject()).put("direction", initial_dir.CtoS()));
-                    secondTurn = true;
-                    return decision;
-                } else if (closeEcho(I).equals("Early")) {
-                    flyOnce = false;
-                    flyTwice = true;
-                    decision = makeTurns(direction, I);
-                } else {
-                    decision = makeTurns(direction, I);
-                }
-            } else if (secondTurn) {
-                new_dir = dir_before_turn.opposite();
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
-                secondTurn = false;
-                return decision;
-            } else if (!done) {
-                decision = makeTurns(direction, I);
-            } else {
-                if (scanning) {
-                    decision.put("action", "scan");
-                    scanning = false;
-                } else {
-                    decision.put("action", "fly");
-                    scanning = true;
-                }
-            }
+        decision = currentState.handle(this);
 
         return decision;
     }
 
-    //check if there's no more land in front of you
-    private boolean echoCheck(Information I) {
-        JSONObject extra = I.getExtra();
-        if (extra.has("found")) {
-            if (extra.get("found").equals("OUT_OF_RANGE")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //If we're on ocean-only, check if we can turn
-    private boolean checkTurn(Information I) {
-        JSONObject extra = I.getExtra();
-
-        if (extra.has("biomes")) {
-            JSONArray biomes = extra.getJSONArray("biomes");
-            for (int i = 0; i<biomes.length(); i++) {
-                if (!(biomes.get(i).equals("OCEAN"))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
-
-    }
-
-    //Make appropriate turns to efficiently turn instead of leaving gaps in the searching of the map.
-    //We do this by making multiple turns
-    //Before making this turns, we fly 1-2 times so we don't miss anything when turning
-    //We make 4 turns in total to efficiently turn
-    private JSONObject makeTurns(Compass direction, Information I) {
-        JSONObject decision = new JSONObject();
-
-        if (flyOnce) {
-            decision.put("action", "fly");
-            flyOnce = false;
-            flyTwice = true;
-            done = false;
-            return decision;
-        } else if (flyTwice) {
-            decision.put("action", "fly");
-            flyTwice = false;
-            half_turn = true;
-            done = false;
-            return decision;
-        }
-         if (half_turn) {
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", initial_dir.CtoS()));
-            half_turn = false;
-            flying = true;
-            dir_before_turn = direction;
-            done = false;
-        } else if (flying) {
-            decision.put("action", "fly");
-            flying = false;
-            full_turn = true;
-        } else if (full_turn) {
-            new_dir = dir_before_turn.opposite();
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
-            full_turn = false;
-            recenter = true;
-        } else if (recenter) {
-            Compass opposite_dir = initial_dir.opposite();
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", opposite_dir.CtoS()));
-            recenter = false;
-            second_recenter = true;
-        } else if (second_recenter) {
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
-            second_recenter = false;
-            echoing = true;
-        } else if (echoing) {
-            decision.put("action", "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", new_dir.CtoS()));
-            echoing = false;
-        } else {
-            if (echoCheck(I)) {
-                decision.put("action", "stop");
-            } else {
-                flyOnce = true;
-                flyTwice = true;
-                half_turn = true;
-                scanning = false;
-                full_turn = true;
-                recenter = true;
-                second_recenter = true;
-                echoing = true;
-                done = true;
-                decision.put("action", "scan");
-            }
-        }
-        return decision;
-    }
-
-
-    @Override
     public String calculateClosest() {
 
         POI closest_creek = creeks.get(0);
@@ -260,7 +107,6 @@ public class GridSearcher implements POIFinder {
         return distance;
     }
 
-    @Override
     public void checkPOI(JSONObject extra, Position pos) {
         //if the result of a scan has creeks in it, add them to the list. Same with sites.
         if (extra.has("creeks")) {

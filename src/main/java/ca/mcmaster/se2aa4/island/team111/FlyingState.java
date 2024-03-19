@@ -4,9 +4,11 @@ import org.json.JSONObject;
 
 public class FlyingState implements GridSearchState {
     @Override
-    public void handle(GridSearcher searcher) {
+    public JSONObject handle(GridSearcher searcher) {
+        JSONObject decision = new JSONObject();
         searcher.setState(new ScanningState());
-        searcher.giveDecision(new JSONObject("action", "scan"));
+        decision.put("action", "scan");
+        return decision;
     } 
 
 }

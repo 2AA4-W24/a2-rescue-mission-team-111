@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+import org.json.JSONObject;
+
 public interface GridSearchState {
-    void handle(GridSearcher searcher);
+    JSONObject handle(GridSearcher searcher);
 }

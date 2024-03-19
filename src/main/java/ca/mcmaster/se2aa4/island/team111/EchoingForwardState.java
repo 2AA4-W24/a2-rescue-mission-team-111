@@ -4,22 +4,28 @@ import org.json.JSONObject;
 
 public class EchoingForwardState implements GridSearchState {
     @Override
-    public void handle(GridSearcher searcher) {
+    public JSONObject handle(GridSearcher searcher) {
         Information I = searcher.getCurrentInfo();
         JSONObject extras = I.getExtra();
         JSONObject decision = new JSONObject();
 
-        searcher.setRange(extras.getInt("range"));
-        if (extras.getInt("range") > 2) {
-            searcher.setState(new FlyWideTurn());
-            decision.put("action", "fly");
-            searcher.giveDecision(decision);
+        if (extras.get("found").equals("OUT_OF_RANGE")) {
+            searcher.setRange(extras.getInt("range"));
+            if (extras.getInt("range") > 2) {
+                searcher.setState(new FlyWideTurn());
+                decision.put("action", "fly");
+                return decision;
+            } else {
+                searcher.setState(new FirstTurn());
+                Compass turningDir = searcher.getInitialDir();
+                decision.put("action", "heading");
+                decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+                return decision;
+            }
         } else {
-            searcher.setState(new turnQuickly());
-            Compass turningDir = searcher.getInitialDir();
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
-            searcher.giveDecision(decision);
+            searcher.setState(new FlyingState());
+            decision.put("action", "fly");
+            return decision;
         }
 
     } 
