@@ -79,7 +79,7 @@ public class EchoArrive {
         }
 
         //fly until you arrive at island
-        while (moves_to_island < range) {
+        while (moves_to_island <= range) {
             decision.put("action", "fly");
             moves_to_island++;
             return decision;
