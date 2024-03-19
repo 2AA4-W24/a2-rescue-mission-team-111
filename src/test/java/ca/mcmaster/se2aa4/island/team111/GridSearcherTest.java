@@ -26,8 +26,8 @@ public class GridSearcherTest {
         GridSearcher gridsrch = new GridSearcher(Compass.EAST);
         gridsrch.site = new POI("id1",new Position(0,0));
 
-        double result = gridsrch.getDistanceTest(new POI("id2",new Position(0,0)));
-        assertTrue(result == 0);
+        double result = gridsrch.getDistanceTest(new POI("id2",new Position(-2,0)));
+        assertEquals(result, 2);
     }
 
     @Test
