@@ -86,7 +86,7 @@ public class GridSearcher {
         POI closest_creek = creeks.get(0);
         for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
-            if (getDistanceToSite(this_creek) < getDistanceToSite(closest_creek)) {
+            if (getDistance(this_creek) < getDistance(closest_creek)) {
                 closest_creek = this_creek;
             }
         }
@@ -94,7 +94,7 @@ public class GridSearcher {
         return closest_creek.getID();
     }
 
-    private double getDistanceToSite(POI creek) {
+    private double getDistance(POI creek) {
         int x = Math.abs(site.getXvalue()-creek.getXvalue());
         int y = Math.abs(site.getYvalue()-creek.getYvalue());
         double distance = Math.sqrt((x*x) + (y*y));
@@ -102,7 +102,7 @@ public class GridSearcher {
     }
 
     public double getDistanceTest(POI creek){
-        return getDistanceToSite(creek);
+        return getDistance(creek);
     }
 
 }
