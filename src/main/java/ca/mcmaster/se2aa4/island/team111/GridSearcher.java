@@ -17,6 +17,7 @@ public class GridSearcher {
     private Compass dir_before_turn;
 
     private int range = 0;
+    private int ground_range = 0;
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
@@ -30,6 +31,18 @@ public class GridSearcher {
 
     public Information getCurrentInfo() {
         return currentInfo;
+    }
+
+    public int getGroundRange() {
+        return ground_range;
+    }
+
+    public void setGroundRange(int range) {
+        ground_range = range;
+    }
+
+    public void decrementGroundRange() {
+        ground_range--;
     }
 
     public void addCreek(String id) {

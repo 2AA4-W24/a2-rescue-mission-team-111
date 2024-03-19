@@ -23,6 +23,9 @@ public class EchoingForwardState implements GridSearchState {
                 return decision;
             }
         } else {
+            if (extras.getInt("range") > 1) {
+                searcher.setGroundRange(extras.getInt("range"));
+            }
             searcher.setState(new FlyingState());
             decision.put("action", "fly");
             return decision;
