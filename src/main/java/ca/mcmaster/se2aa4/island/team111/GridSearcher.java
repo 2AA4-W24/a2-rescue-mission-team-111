@@ -101,4 +101,8 @@ public class GridSearcher {
         return distance;
     }
 
+    public double getDistanceTest(POI creek){
+        return getDistanceToSite(creek);
+    }
+
 }
