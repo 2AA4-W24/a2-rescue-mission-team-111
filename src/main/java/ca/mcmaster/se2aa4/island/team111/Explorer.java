@@ -17,9 +17,9 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public void initialize(String s) {
-        logger.info("** Initializing the Exploration Command Center");
+        logger.info(" Initializing the Exploration Command Center");
         JSONObject info = new JSONObject(new JSONTokener(new StringReader(s)));
-        logger.info("** Initialization info:\n {}",info.toString(2));
+        logger.info(" Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         Integer batteryLevel = info.getInt("budget");
         drone = new Drone(batteryLevel, direction);
@@ -29,7 +29,9 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String takeDecision() {
-        JSONObject decision = drone.giveDecision();
+        JSONObject decision = new JSONObject();
+
+        decision = drone.giveDecision();
 
         return decision.toString();
     }
@@ -54,4 +56,7 @@ public class Explorer implements IExplorerRaid {
         logger.info("CLOSEST CREEK: " + closest);
         return closest;
     }
+
 }
+
+
