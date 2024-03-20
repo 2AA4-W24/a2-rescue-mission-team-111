@@ -6,14 +6,14 @@ import org.apache.logging.log4j.Logger;
 
 import eu.ace_design.island.bot.IExplorerRaid;
 import org.json.JSONObject;
-import org.json.JSONTokener; 
+import org.json.JSONTokener;
 
 public class Explorer implements IExplorerRaid {
 
-    private final Logger logger = LogManager.getLogger();
+    int moves = 0;
+    int maxmoves = 50;
 
-    private Translator t = new Translator();
-    public Drone drone;
+    private final Logger logger = LogManager.getLogger();
 
     @Override
     public void initialize(String s) {
@@ -22,7 +22,6 @@ public class Explorer implements IExplorerRaid {
         logger.info("** Initialization info:\n {}",info.toString(2));
         String direction = info.getString("heading");
         Integer batteryLevel = info.getInt("budget");
-        drone = new Drone(batteryLevel, direction);
         logger.info("The drone is facing {}", direction);
         logger.info("Battery level is {}", batteryLevel);
     }
@@ -30,17 +29,27 @@ public class Explorer implements IExplorerRaid {
     @Override
     public String takeDecision() {
         JSONObject decision = new JSONObject();
+        JSONObject parameters = new JSONObject();
 
-        decision = drone.giveDecision();
+        if((moves<=maxmoves)&&(moves%2==0)){
+            parameters.put("direction","S");
+            
+            decision.put("action","echo");
+            decision.put("parameters",parameters);
+        }else if(moves<=maxmoves){
+            decision.put("action","fly");
+        }else{
+            decision.put("action","stop");
+        }
+        moves += 1;
 
+        logger.info("** Decision: {}",decision.toString());
         return decision.toString();
     }
 
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
-        Information I = t.translate(response);
-        drone.receiveInfo(I);
         logger.info("** Response received:\n"+response.toString(2));
         Integer cost = response.getInt("cost");
         logger.info("The cost of the action was {}", cost);
@@ -52,8 +61,7 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        String closest = drone.giveClosest();
-        logger.info("CLOSEST CREEK: " + closest);
-        return closest;
+        return "no creek found";
     }
+
 }
