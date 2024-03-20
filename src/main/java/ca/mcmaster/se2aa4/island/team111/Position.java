@@ -2,20 +2,20 @@ package ca.mcmaster.se2aa4.island.team111;
 
 public class Position {
 
-    private int x_position;
-    private int y_position;
+    private int x;
+    private int y;
 
     public Position(int x_position, int y_position) {
-        this.x_position = x_position;
-        this.y_position = y_position;
+        this.x = x_position;
+        this.y = y_position;
     }
 
     public int getX() {
-        return x_position;
+        return x;
     }
 
     public int getY() {
-        return y_position;
+        return y;
     }
 
     //Change position depending on turn directions
@@ -74,10 +74,18 @@ public class Position {
         int x_position = this.getX();
         int y_position = this.getY();
         switch(direction) {
-            case NORTH: return new Position(x_position, y_position += 1);
-            case WEST: return new Position(x_position -= 1, y_position);
-            case EAST: return new Position(x_position += 1, y_position);
-            case SOUTH: return new Position(x_position, y_position -= 1);
+            case NORTH:
+            y_position = y_position + 1;
+             return new Position(x_position, y_position);
+            case WEST: 
+            x_position = x_position - 1;
+            return new Position(x_position, y_position);
+            case EAST: 
+            x_position = x_position + 1;
+            return new Position(x_position, y_position);
+            case SOUTH: 
+            y_position = y_position + 1;
+            return new Position(x_position, y_position);
             default: return this;
         }
     }
