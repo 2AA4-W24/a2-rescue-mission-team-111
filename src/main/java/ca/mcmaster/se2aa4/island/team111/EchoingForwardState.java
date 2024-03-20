@@ -20,7 +20,7 @@ public class EchoingForwardState implements GridSearchState {
                 Compass turningDir = searcher.getInitialDir();
                 decision.put("action", "heading");
                 decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
-                return decision;
+                return decision; 
             }
         } else {
             if (extras.getInt("range") > 1) {
