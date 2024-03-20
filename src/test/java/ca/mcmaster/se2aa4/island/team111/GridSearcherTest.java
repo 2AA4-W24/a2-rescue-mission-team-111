@@ -3,7 +3,6 @@ package ca.mcmaster.se2aa4.island.team111;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class GridSearcherTest {
@@ -20,6 +19,15 @@ public class GridSearcherTest {
         gridsearch.site = site;
 
         assertEquals("id1",gridsearch.calculateClosest());
+    }
+
+    @Test
+    void testCheckDistance(){
+        GridSearcher gridsrch = new GridSearcher(Compass.EAST);
+        gridsrch.site = new POI("id1",new Position(0,0));
+
+        double result = gridsrch.getDistanceTest(new POI("id2",new Position(-2,0)));
+        assertEquals(result, 2);
     }
 
     @Test

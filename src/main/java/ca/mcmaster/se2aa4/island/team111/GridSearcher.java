@@ -6,17 +6,18 @@ import org.json.JSONObject;
 
 public class GridSearcher {
 
-    private GridSearchState currentState = new FlyingState();
+    private GridSearchState currentState = new ScanningState();
     private Information currentInfo;
     private Position currentPos;
 
     public List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
-    public POI site = new POI("NULL", new Position(26, -26));
+    public POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initial_dir;
     private Compass dir_before_turn;
 
     private int range = 0;
+    private int ground_range = 0;
 
     public GridSearcher(Compass direction) {
         this.initial_dir = direction;
@@ -30,6 +31,18 @@ public class GridSearcher {
 
     public Information getCurrentInfo() {
         return currentInfo;
+    }
+
+    public int getGroundRange() {
+        return ground_range;
+    }
+
+    public void setGroundRange(int range) {
+        ground_range = range;
+    }
+
+    public void decrementGroundRange() {
+        ground_range--;
     }
 
     public void addCreek(String id) {
@@ -82,6 +95,13 @@ public class GridSearcher {
     }
 
     public String calculateClosest() {
+
+        if (creeks.isEmpty()) {
+            return "No creeks found";
+        } else if (site.getID() == "NULL") {
+            POI lastCreek = creeks.get(creeks.size()-1);
+            return lastCreek.getID();
+        }
 
         POI closest_creek = creeks.get(0);
         for (int i = 1; i<creeks.size(); i++) {
