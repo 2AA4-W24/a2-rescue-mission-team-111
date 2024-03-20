@@ -86,8 +86,7 @@ public class GridSearcher {
 
 
     public JSONObject performSearch() {
-        JSONObject decision = currentState.handle(this);
-        return decision;
+        return currentState.handle(this);
     }
 
     public String calculateClosest() {
