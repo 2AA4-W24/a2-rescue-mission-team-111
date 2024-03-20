@@ -85,12 +85,8 @@ public class GridSearcher {
     }
 
 
-    public JSONObject performSearch(Compass direction, Position pos, Information I) {
-
-        JSONObject decision = new JSONObject();
-        
-        decision = currentState.handle(this);
-
+    public JSONObject performSearch() {
+        JSONObject decision = currentState.handle(this);
         return decision;
     }
 
@@ -98,7 +94,7 @@ public class GridSearcher {
 
         if (creeks.isEmpty()) {
             return "No creeks found";
-        } else if (site.getID() == "NULL") {
+        } else if (site.getID().equals("null")) {
             POI lastCreek = creeks.get(creeks.size()-1);
             return lastCreek.getID();
         }
@@ -120,10 +116,9 @@ public class GridSearcher {
 
     //Uses pythagorean mathematics to check distance
     private double getDistance(POI creek) {
-        int x = Math.abs(site.getXvalue()-creek.getXvalue());
-        int y = Math.abs(site.getYvalue()-creek.getYvalue());
-        double distance = Math.sqrt((x*x) + (y*y));
-        return distance;
+        double x = Math.abs(site.getXvalue()-creek.getXvalue());
+        double y = Math.abs(site.getYvalue()-creek.getYvalue());
+        return Math.sqrt((x*x) + (y*y));
     }
 
 }

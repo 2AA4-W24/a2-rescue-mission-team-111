@@ -4,6 +4,8 @@ import org.json.JSONObject;
 
 public class EchoArrive {
 
+    private String magicWord = "action";
+
     private int moves_to_island = 0;
     private int range;
 
@@ -27,27 +29,27 @@ public class EchoArrive {
                 //Keep echoing left and right
                 if (echoingR) {
                     echo = direction.right();
-                    decision.put("action", "echo");
+                    decision.put(magicWord, "echo");
                     decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
                     echoingR = !echoingR;
                 } else {
                     echo = direction.left();
-                    decision.put("action", "echo");
+                    decision.put(magicWord, "echo");
                     decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
                     echoingR = !echoingR;
                 }
         } else if (extra.has("found") && extra.get("found").equals("GROUND")) {
             found_ground = true;
-            decision.put("action", "fly"); //If we found ground, fly one ahead
+            decision.put(magicWord, "fly"); //If we found ground, fly one ahead
         } else if (found_ground) {
             previous_dir = direction;
-            decision.put("action", "heading");
+            decision.put(magicWord, "heading");
             decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS())); //Turn towards the direction that gave us ground
         } else {
-            decision.put("action", "fly");
+            decision.put(magicWord, "fly");
         }
         
-        if (decision.get("action") == "heading") {
+        if (decision.get(magicWord) == "heading") {
             finding_done = true;
         }
         return decision;
@@ -59,13 +61,13 @@ public class EchoArrive {
         //Algorithm completes an efficient turn instead of missing the first column/row of the island
         if (firstTurn) {
             Compass fullTurn = previous_dir.opposite();
-            decision.put("action", "heading");
+            decision.put(magicWord, "heading");
             decision.put("parameters", (new JSONObject()).put("direction", fullTurn.CtoS()));
             firstTurn = false;
             secondTurn = true;
             return decision;
         } else if (secondTurn) {
-            decision.put("action", "heading");
+            decision.put(magicWord, "heading");
             decision.put("parameters", (new JSONObject()).put("direction", echo.CtoS()));
             secondTurn = false;
             return decision;
@@ -73,7 +75,7 @@ public class EchoArrive {
 
         //Echo to see how far away the island is
         if (echoFirst) {
-            decision.put("action", "echo");
+            decision.put(magicWord, "echo");
             decision.put("parameters", (new JSONObject()).put("direction", direction.CtoS()));
             echoFirst = false;
             return decision;
@@ -85,14 +87,14 @@ public class EchoArrive {
         }
 
         //fly until you arrive at island
-        while (moves_to_island <= range) {
-            decision.put("action", "fly");
+        if (moves_to_island <= range) {
+            decision.put(magicWord, "fly");
             moves_to_island++;
             return decision;
         }
 
         //scan when reached island
-        decision.put("action", "scan");
+        decision.put(magicWord, "scan");
         arriving_done = true;
         return decision;
     }

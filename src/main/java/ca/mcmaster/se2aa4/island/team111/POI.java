@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.island.team111;
 public class POI {
 
     private String ID;
-    final private Position pos;
+    private Position pos;
 
     public POI(String ID, Position pos) {
         this.ID = ID;
