@@ -31,6 +31,11 @@ public class Drone {
         return current_info;
     }
     
+    // Public setter for drone state
+    public void setState(DroneState ds){
+        this.current_state = ds;
+    }
+
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         current_info = I;
