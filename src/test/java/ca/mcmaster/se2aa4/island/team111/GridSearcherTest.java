@@ -21,6 +21,20 @@ class GridSearcherTest {
         assertEquals("id1",gridsearch.calculateClosest());
     }
 
+    @Test 
+    void calculateClosestNoCreeks(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        assertEquals("No creeks found", gs.calculateClosest());
+    }
+
+    @Test 
+    void calculateClosestNoSite(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        POI creek = new POI("last",new Position(5, 17));
+        gs.addCreek(creek);
+        assertEquals("last",gs.calculateClosest());
+    }
+
     @Test
     void testCheckDistance(){
         GridSearcher gridsrch = new GridSearcher(Compass.EAST, Compass.SOUTH);
