@@ -37,9 +37,7 @@ public class Drone {
     public void receiveInfo(Information I) {
         current_info = I;
         battery.depleteCharge(I.getCost());
-        battery.depleteCharge(0);
     }
-
 
 
     public JSONObject giveDecision() {
