@@ -68,7 +68,7 @@ public class GridSearcher {
         return closest_creek.getID();
     }
 
-    public double getDistanceTest(POI creek, POI site){
+    public double getDistanceTest(POI creek){
         return getDistance(creek);
     }
 
