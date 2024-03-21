@@ -16,6 +16,52 @@ class GridSearcherTest {
     }
 
     @Test
+    void calculateClosestWithCreeks(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.EAST);
+        gs.setStatePublic(gs.newScanningState());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+
+        JSONArray creekArray = new JSONArray();
+        JSONArray siteArray = new JSONArray();
+        JSONArray biomeArray = new JSONArray();
+
+        job.put("creeks",creekArray);
+        job.put("sites",siteArray);
+        job.put("biomes",biomeArray);
+
+        Information info = new Information(15, job);
+
+        // Simulate at position
+        creekArray.put("creekfar");
+        gs.performSearch(info, new Position(52, 1000));
+        creekArray.clear();
+
+        JSONObject job2 = new JSONObject();
+        job2.put("found","");
+        job2.put("range",5);
+
+        creekArray = new JSONArray();
+        siteArray = new JSONArray();
+        biomeArray = new JSONArray();
+
+        job2.put("creeks",creekArray);
+        job2.put("sites",siteArray);
+        job2.put("biomes",biomeArray);
+
+        info = new Information(15, job2);
+        // Simulate at position 2
+        creekArray.put("creekclose");
+        gs.setStatePublic(gs.newScanningState());
+        gs.performSearch(info, new Position(1, 1));
+
+        //After scanning, check the closest creek
+        assertEquals("creekclose", gs.calculateClosest());
+    }
+
+    @Test
     void testCheckDistance(){
         GridSearcher gridsrch = new GridSearcher(Compass.EAST, Compass.SOUTH);
 
@@ -134,7 +180,6 @@ class GridSearcherTest {
         JSONObject job = new JSONObject();
         job.put("found","");
         job.put("range",5);
-        JSONObject expected = new JSONObject();
         Information info = new Information(15, job);
 
         Position pos = new Position(0, 0);
@@ -150,7 +195,6 @@ class GridSearcherTest {
         JSONObject job = new JSONObject();
         job.put("found","");
         job.put("range",5);
-        JSONObject expected = new JSONObject();
 
         Information info = new Information(15, job);
 
@@ -268,5 +312,4 @@ class GridSearcherTest {
         Decision dec = gs.performSearch(info,pos);
         assertEquals("fly",dec.getAction());
     }
-    //comment
 }
