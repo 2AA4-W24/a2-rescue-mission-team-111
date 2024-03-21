@@ -25,6 +25,11 @@ public class Drone {
         this.a1 = new Arriver(direc);
         this.g1 = new GridSearcher(Compass.EAST, Compass.SOUTH);
     }
+
+    // Getter for current info
+    public Information getInfo(){
+        return current_info;
+    }
     
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
