@@ -12,6 +12,7 @@ public class Drone {
     private Arriver a1;
     private GridSearcher g1;
     private Information current_info = new Information(0, new JSONObject());
+     
 
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
@@ -49,7 +50,9 @@ public class Drone {
         switch(current_state) {
             case FINDING:
                 decision = a1.findIsland(current_info);
-                if (decision.getAction() == "fly") {
+                String instruction1 = decision.getAction();
+
+                if (instruction1.equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 if (a1.findingIsDone()) {
@@ -58,9 +61,10 @@ public class Drone {
                 return decision;
             case ARRIVING: 
                 decision = a1.moveToIsland(current_info.getExtra());
-                if (decision.getAction() == "fly") {
+                String instruction2 = decision.getAction();
+                if (instruction2.equals(decision)) {
                     pos = pos.changePosition(direction);
-                } else if (decision.getAction() == "heading") {
+                } else if (instruction2.equals("heading")) {
                     Compass old_dir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
@@ -72,11 +76,12 @@ public class Drone {
                 return decision;
             case SEARCHING:
                 decision = g1.performSearch(current_info, pos);
-                if (decision.getAction() == "heading") {
+                String instruction3 = decision.getAction();
+                if (instruction3.equals("heading")) {
                     Compass old_dir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
-                } else if (decision.getAction() == "fly") {
+                } else if (instruction3.equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 return decision;
