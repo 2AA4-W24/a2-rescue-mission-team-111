@@ -26,16 +26,16 @@ public class Drone {
     public Information getInfo(){
         return current_info;
     }
-    
-    // Public setter for drone state
-    public void setState(DroneState ds){
-        this.current_state = ds;
-    }
 
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         current_info = I;
         battery.depleteCharge(I.getCost());
+    }
+
+    //Getter for current state
+    public DroneState getCurrentState(){
+        return this.current_state;
     }
 
 
@@ -49,7 +49,7 @@ public class Drone {
         switch(current_state) {
             case FINDING:
                 decision = a1.findIsland(current_info);
-                if (decision.getAction() == "fly") {
+                if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 if (a1.findingIsDone()) {
@@ -58,9 +58,9 @@ public class Drone {
                 return decision;
             case ARRIVING: 
                 decision = a1.moveToIsland(current_info.getExtra());
-                if (decision.getAction() == "fly") {
+                if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
-                } else if (decision.getAction() == "heading") {
+                } else if (decision.getAction().equals("heading")) {
                     Compass old_dir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
@@ -72,11 +72,11 @@ public class Drone {
                 return decision;
             case SEARCHING:
                 decision = g1.performSearch(current_info, pos);
-                if (decision.getAction() == "heading") {
+                if (decision.getAction().equals("heading")) {
                     Compass old_dir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
-                } else if (decision.getAction() == "fly") {
+                } else if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 return decision;
