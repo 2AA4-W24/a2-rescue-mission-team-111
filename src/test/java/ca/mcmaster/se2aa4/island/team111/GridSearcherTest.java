@@ -114,4 +114,52 @@ class GridSearcherTest {
         Position pos = new Position(0, 0);
         assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
     }
+    @Test
+    void testSecondTurn(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.EAST);
+        gs.setStatePublic(gs.newSecondTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","heading");
+        expected.put("parameters", (new JSONObject()).put("direction", "W"));
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
+    @Test
+    void testThirdTurn(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.EAST);
+        gs.setStatePublic(gs.newThirdTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","heading");
+        expected.put("parameters", (new JSONObject()).put("direction", "W"));
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
+    @Test
+    void testFourthTurn(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.EAST);
+        gs.setStatePublic(gs.newFourthTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","scan");
+
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
 }
