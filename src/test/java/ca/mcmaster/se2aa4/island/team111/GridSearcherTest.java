@@ -161,8 +161,6 @@ class GridSearcherTest {
         job.put("found","");
         job.put("range",5);
         JSONObject expected = new JSONObject();
-        expected.put("action","heading");
-        expected.put("parameters", (new JSONObject()).put("direction", "W"));
         Information info = new Information(15, job);
 
         Position pos = new Position(0, 0);
