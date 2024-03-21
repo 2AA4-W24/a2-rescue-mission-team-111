@@ -83,6 +83,18 @@ public class GridSearcher {
         JSONObject handle(GridSearcher searcher);
     }
 
+    // Public access to gstates
+    public GridSearchState newCheckingDone(){return new CheckingDone();}
+    public GridSearchState newEchoingForwardState(){return new EchoingForwardState();}
+    public GridSearchState newFlyingState(){return new FlyingSearcher();}
+    public GridSearchState newFlyWideTurn(){return new FlyWideTurn();}
+    public GridSearchState newScanningState(){return new ScanningState();}
+    public GridSearchState newFirstTurn(){return new FirstTurn();}
+    public GridSearchState newSecondTurn(){return new SecondTurn();}
+    public GridSearchState newThirdTurn(){return new ThirdTurn();}
+    public GridSearchState newFourthTurn(){return new FourthTurn();}
+
+
     private class CheckingDone implements GridSearchState {
 
         @Override
