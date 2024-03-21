@@ -15,8 +15,12 @@ class DroneTest {
         JSONObject stopdec = new JSONObject();
         stopdec.put("action","stop");
 
-        assertTrue(stopdec.similar(dr.giveDecision()));
-        
+        assertEquals(stopdec.toString(),(dr.giveDecision().toString()));
+    }
+
+    @Test
+    void finding(){
+        Drone dr = new Drone(5000,"E");
     }
 
     @Test
