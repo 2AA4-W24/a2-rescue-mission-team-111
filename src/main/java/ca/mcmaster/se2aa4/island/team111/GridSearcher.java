@@ -11,7 +11,7 @@ public class GridSearcher {
     private Information currentInfo;
     private Position currentPos;
 
-    private List<POI> creeks = new ArrayList<POI>();
+    private List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
     private POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initialDir;
@@ -23,11 +23,6 @@ public class GridSearcher {
     public GridSearcher(Compass firstDir, Compass direction) {
         this.initialDir = firstDir;
         this.dirBeforeTurn = direction;
-    }
-
-    // Public setter for testing
-    public void setStatePublic(GridSearchState gstate){
-        this.setState(gstate);
     }
 
     private void setState(GridSearchState gState) {
@@ -59,18 +54,7 @@ public class GridSearcher {
         return closest_creek.getID();
     }
 
-    // Public site setter for testing
-    public void setSite(POI newSite){
-        this.site = newSite;
-    }
-
-    // Public creek setter for testing 
-    public void addCreek(POI creek){
-        this.creeks.add(creek);
-    }
-
-    // Getter for getDistance
-    public double getDistanceTest(POI creek){
+    public double getDistanceTest(POI creek, POI site){
         return getDistance(creek, site);
     }
 
@@ -80,17 +64,6 @@ public class GridSearcher {
         double y = Math.abs(site.getYvalue()-creek.getYvalue());
         return Math.sqrt((x*x) + (y*y));
     }
-
-    // Getters for gsState Testing
-    public GridSearchState newCheckingDone(){return new CheckingDone();}
-    public GridSearchState newEchoingForwardState(){return new EchoingForwardState();}
-    public GridSearchState newFlyingState(){return new FlyingState();}
-    public GridSearchState newFlyWideTurn(){return new FlyWideTurn();}
-    public GridSearchState newScanningState(){return new ScanningState();}
-    public GridSearchState newFirstTurn(){return new FirstTurn();}
-    public GridSearchState newSecondTurn(){return new SecondTurn();}
-    public GridSearchState newThirdTurn(){return new ThirdTurn();}
-    public GridSearchState newFourthTurn(){return new FourthTurn();}
 
     private interface GridSearchState {
         JSONObject handle(GridSearcher searcher);
