@@ -11,7 +11,7 @@ public class GridSearcher {
     private Information currentInfo;
     private Position currentPos;
 
-    private List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
+    private List<POI> creeks = new ArrayList<POI>();
     private POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initialDir;
@@ -54,6 +54,18 @@ public class GridSearcher {
         return closest_creek.getID();
     }
 
+    // Public setter for testing
+
+    public void setSite(POI newSite){
+        this.site = newSite;
+    }
+
+    // Public setter for testing 
+    public void addCreek(POI creek){
+        this.creeks.add(creek);
+    }
+
+    //Getter for getDistance
     public double getDistanceTest(POI creek){
         return getDistance(creek);
     }
