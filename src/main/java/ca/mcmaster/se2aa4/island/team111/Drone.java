@@ -22,6 +22,11 @@ public class Drone {
         Compass compass = Compass.NORTH;
         this.direction = compass.StoC(dir);
     }
+
+    // Getter for current info
+    public Information getInfo(){
+        return current_info;
+    }
     
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
