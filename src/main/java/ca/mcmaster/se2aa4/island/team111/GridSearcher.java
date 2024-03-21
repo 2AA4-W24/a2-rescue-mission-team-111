@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public class GridSearcher {
 
-    private GridSearchState currentState = new FlyingState();
+    private GridSearchState currentState = new FlyingSearcher();
     private Information currentInfo;
     private Position currentPos;
 
@@ -47,7 +47,7 @@ public class GridSearcher {
         POI closest_creek = creeks.get(0);
         for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
-            if (getDistance(this_creek) < getDistance(closest_creek)) {
+            if (getDistance(this_creek, site) < getDistance(closest_creek, site)) {
                 closest_creek = this_creek;
             }
         }
@@ -55,11 +55,11 @@ public class GridSearcher {
     }
 
     public double getDistanceTest(POI creek){
-        return getDistance(creek);
+        return getDistance(creek, site);
     }
 
     //Uses pythagorean mathematics to check distance
-    private double getDistance(POI creek) {
+    private double getDistance(POI creek, POI site) {
         double x = Math.abs(site.getXvalue()-creek.getXvalue());
         double y = Math.abs(site.getYvalue()-creek.getYvalue());
         return Math.sqrt((x*x) + (y*y));
@@ -112,7 +112,7 @@ public class GridSearcher {
                 if (extras.getInt("range") > 1) {
                     groundRange = extras.getInt("range");
                 }
-                searcher.setState(new FlyingState());
+                searcher.setState(new FlyingSearcher());
                 decision.put("action", "fly");
                 return decision;
             }
@@ -135,13 +135,13 @@ public class GridSearcher {
         } 
     }
 
-    private class FlyingState implements GridSearchState {
+    private class FlyingSearcher implements GridSearchState {
         @Override
         public JSONObject handle(GridSearcher searcher) {
             JSONObject decision = new JSONObject();
 
             if (searcher.groundRange > 2) {
-                searcher.setState(new FlyingState());
+                searcher.setState(new FlyingSearcher());
                 groundRange--;
                 decision.put("action", "fly");
                 return decision;
@@ -185,7 +185,7 @@ public class GridSearcher {
         @Override
         public JSONObject handle(GridSearcher searcher) {
             JSONObject decision = new JSONObject();
-            searcher.setState(new FlyingState());
+            searcher.setState(new FlyingSearcher());
             dirBeforeTurn = dirBeforeTurn.opposite();
             decision.put("action", "scan");
             return decision;
@@ -218,7 +218,7 @@ public class GridSearcher {
             JSONArray biomes = extras.getJSONArray("biomes");
             for (int i = 0; i<biomes.length(); i++) {
                 if (!(biomes.get(i).equals("OCEAN"))) {
-                    searcher.setState(new FlyingState());
+                    searcher.setState(new FlyingSearcher());
                     decision.put("action", "fly");
                     return decision;
                 }

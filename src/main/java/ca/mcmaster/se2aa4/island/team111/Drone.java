@@ -12,7 +12,7 @@ public class Drone {
     private Position pos = new Position(0, 0);
     private Compass direction;
     private DroneState current_state = DroneState.FINDING;
-    private EchoArrive e1 = new EchoArrive();
+    private Arriver a1;
     private GridSearcher g1;
     private Information current_info = new Information(0, new JSONObject());
     private String magicWord = "action";
@@ -20,7 +20,10 @@ public class Drone {
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
         Compass compass = Compass.NORTH;
-        this.direction = compass.StoC(dir);
+        Compass direc = compass.StoC(dir);
+        this.direction = direc;
+        this.a1 = new Arriver(direc);
+        this.g1 = new GridSearcher(Compass.EAST, Compass.SOUTH);
     }
     
     //Receive info from acknowledge results here
@@ -40,22 +43,21 @@ public class Drone {
 
         switch(current_state) {
             case FINDING:
-                decision = e1.findIsland(current_info.getExtra(), direction);
+                decision = a1.findIsland(current_info, direction);
                 if (decision.get(magicWord) == "heading") {
                     JSONObject parameters = decision.getJSONObject("parameters");
                     Compass old_dir = direction;
                     direction = direction.StoC(parameters.getString("direction"));
                     pos = pos.changePositionTurn(old_dir, direction);
-                    this.g1 = new GridSearcher(old_dir, direction);
                 } else if (decision.get(magicWord) == "fly") {
                     pos = pos.changePositionFly(direction);
                 }
-                if (e1.findingDone()) {
+                if (a1.findingIsDone()) {
                     current_state = current_state.nextState();
                 }
                 return decision;
             case ARRIVING: 
-                decision = e1.moveToIsland(current_info.getExtra(), direction);
+                decision = a1.moveToIsland(current_info.getExtra(), direction);
                 if (decision.get(magicWord) == "fly") {
                     pos = pos.changePositionFly(direction);
                 } else if (decision.get(magicWord) == "heading") {
@@ -64,7 +66,7 @@ public class Drone {
                     direction = direction.StoC(parameters.getString("direction"));
                     pos = pos.changePositionTurn(old_dir, direction);
                 }
-                if (e1.arrivingDone()) {
+                if (a1.arrivingIsDone()) {
                     current_state = current_state.nextState();
                 }
                 return decision;
