@@ -11,7 +11,7 @@ public class GridSearcher {
     private Information currentInfo;
     private Position currentPos;
 
-    private List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
+    private List<POI> creeks = new ArrayList<POI>();
     private POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initialDir;
@@ -25,6 +25,11 @@ public class GridSearcher {
         this.dirBeforeTurn = direction;
     }
 
+    // Public setter for testing
+    public void setStatePublic(GridSearchState gState){
+        this.setState(gState);
+    }
+
     private void setState(GridSearchState gState) {
         currentState = gState;
     }
@@ -33,6 +38,15 @@ public class GridSearcher {
         this.currentInfo = info;
         this.currentPos = pos;
         return currentState.handle(this);
+    }
+
+    // For Testing
+    public Integer creeksAmount(){
+        return creeks.size();
+    }
+    // For Testing
+    public Position sitePosition(){
+        return new Position(site.getXvalue(), site.getYvalue());
     }
 
     public String calculateClosest() {
@@ -69,7 +83,7 @@ public class GridSearcher {
         JSONObject handle(GridSearcher searcher);
     }
 
-    public class CheckingDone implements GridSearchState {
+    private class CheckingDone implements GridSearchState {
 
         @Override
         public JSONObject handle(GridSearcher searcher) {
