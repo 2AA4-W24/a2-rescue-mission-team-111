@@ -20,9 +20,13 @@ public class GridSearcher {
     private int range = 0;
     private int groundRange = 0;
 
-    public GridSearcher(Compass firstDir, Compass direction) {
+    public GridSearcher(Compass firstDir) {
         this.initialDir = firstDir;
-        this.dirBeforeTurn = direction;
+    }
+
+    public GridSearcher(GridSearcher searcher, Compass secondDir) {
+        this.initialDir = searcher.initialDir;
+        this.dirBeforeTurn = secondDir;
     }
 
     // Public setter for testing
@@ -61,7 +65,7 @@ public class GridSearcher {
         POI closest_creek = creeks.get(0);
         for (int i = 1; i<creeks.size(); i++) {
             POI this_creek = creeks.get(i);
-            if (getDistance(this_creek, site) < getDistance(closest_creek, site)) {
+            if (getDistance(this_creek) < getDistance(closest_creek)) {
                 closest_creek = this_creek;
             }
         }
@@ -69,11 +73,11 @@ public class GridSearcher {
     }
 
     public double getDistanceTest(POI creek, POI site){
-        return getDistance(creek, site);
+        return getDistance(creek);
     }
 
     //Uses pythagorean mathematics to check distance
-    private double getDistance(POI creek, POI site) {
+    private double getDistance(POI creek) {
         double x = Math.abs(site.getXvalue()-creek.getXvalue());
         double y = Math.abs(site.getYvalue()-creek.getYvalue());
         return Math.sqrt((x*x) + (y*y));
