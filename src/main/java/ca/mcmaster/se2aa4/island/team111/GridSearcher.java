@@ -69,7 +69,7 @@ public class GridSearcher {
         JSONObject handle(GridSearcher searcher);
     }
 
-    private class CheckingDone implements GridSearchState {
+    public class CheckingDone implements GridSearchState {
 
         @Override
         public JSONObject handle(GridSearcher searcher) {
