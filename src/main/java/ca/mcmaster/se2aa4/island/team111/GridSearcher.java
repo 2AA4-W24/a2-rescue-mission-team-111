@@ -25,6 +25,11 @@ public class GridSearcher {
         this.dirBeforeTurn = direction;
     }
 
+    // Public setter for testing
+    public void setStatePublic(GridSearchState gState){
+        this.setState(gState);
+    }
+
     private void setState(GridSearchState gState) {
         currentState = gState;
     }
@@ -68,6 +73,17 @@ public class GridSearcher {
     private interface GridSearchState {
         JSONObject handle(GridSearcher searcher);
     }
+
+    // Public access to gstates
+    public GridSearchState newCheckingDone(){return new CheckingDone();}
+    public GridSearchState newEchoingForwardState(){return new EchoingForwardState();}
+    public GridSearchState newFlyingState(){return new FlyingSearcher();}
+    public GridSearchState newFlyWideTurn(){return new FlyWideTurn();}
+    public GridSearchState newScanningState(){return new ScanningState();}
+    public GridSearchState newFirstTurn(){return new FirstTurn();}
+    public GridSearchState newSecondTurn(){return new SecondTurn();}
+    public GridSearchState newThirdTurn(){return new ThirdTurn();}
+    public GridSearchState newFourthTurn(){return new FourthTurn();}
 
     private class CheckingDone implements GridSearchState {
 
