@@ -40,6 +40,15 @@ public class GridSearcher {
         return currentState.handle(this);
     }
 
+    // For Testing
+    public Integer creeksAmount(){
+        return creeks.size();
+    }
+    // For Testing
+    public Position sitePosition(){
+        return new Position(site.getXvalue(), site.getYvalue());
+    }
+
     public String calculateClosest() {
 
         if (creeks.isEmpty()) {
