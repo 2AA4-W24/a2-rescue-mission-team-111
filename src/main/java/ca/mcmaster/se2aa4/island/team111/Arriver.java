@@ -28,7 +28,7 @@ public class Arriver {
         currentState = state;
     }
 
-    public JSONObject findIsland(Information info, Compass direction) {
+    public JSONObject findIsland(Information info) {
         currentInfo = info;
         JSONObject decision = currentState.handle(this);
         if (findingDone) {
@@ -106,7 +106,7 @@ public class Arriver {
 
 
 
-    public JSONObject moveToIsland(JSONObject extras, Compass direction) {
+    public JSONObject moveToIsland(JSONObject extras) {
         if (extras.has("range")) {
             int range = extras.getInt("range");
             for (int i = 0; i<range; i++) {

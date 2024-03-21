@@ -75,7 +75,7 @@ public class Position {
         int y_position = this.getY();
         switch(direction) {
             case NORTH:
-            y_position = y_position + 1;
+            y_position = y_position - 1;
              return new Position(x_position, y_position);
             case WEST: 
             x_position = x_position - 1;
