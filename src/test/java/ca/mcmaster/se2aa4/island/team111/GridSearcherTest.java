@@ -3,6 +3,7 @@ package ca.mcmaster.se2aa4.island.team111;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 class GridSearcherTest {
@@ -45,8 +46,29 @@ class GridSearcherTest {
     }
 
     @Test
-    void testCheckPOI() {
-        assertTrue(true);
+    void testCheckingDone() {
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        gs.setStatePublic(gs.newCheckingDone());
+
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        JSONObject expected = new JSONObject();
+        expected.put("action","stop");
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info, pos).toString());
+
+        //Testing for if in range
+        job = new JSONObject();
+        job.put("found","");
+        expected = new JSONObject();
+        expected.put("action","fly");
+        info = new Information(15, job);
+
+        pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info, pos).toString());
+        
     }
 
     @Test
