@@ -62,7 +62,7 @@ public class Drone {
             case ARRIVING: 
                 decision = a1.moveToIsland(current_info.getExtra());
                 String instruction2 = decision.getAction();
-                if (instruction2.equals(decision)) {
+                if (instruction2.equals("fly")) {
                     pos = pos.changePosition(direction);
                 } else if (instruction2.equals("heading")) {
                     Compass old_dir = direction;
