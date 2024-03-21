@@ -11,7 +11,7 @@ public class GridSearcher {
     private Information currentInfo;
     private Position currentPos;
 
-    private List<POI> creeks = new ArrayList<POI>(); //temporarily public for testing
+    private List<POI> creeks = new ArrayList<POI>();
     private POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initialDir;
