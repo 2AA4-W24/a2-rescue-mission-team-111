@@ -83,7 +83,7 @@ public class Arriver {
                 if (arriver.echoingRight) {
                     arriver.setState(new EchoingArriver());
                     Compass echo = arriver.initialDir;
-                    Compass echoingDir = echo.left();;
+                    Compass echoingDir = echo.left();
                     decision = new Decision("echo", echoingDir);
                 } else {
                     arriver.setState(new FlyingArriver());
