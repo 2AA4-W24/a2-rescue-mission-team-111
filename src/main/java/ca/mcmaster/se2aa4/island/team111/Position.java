@@ -19,7 +19,7 @@ public class Position {
     }
 
     //Change position depending on turn directions
-    public Position changePositionTurn(Compass old_dir, Compass direction) {
+    public Position changePosition(Compass old_dir, Compass direction) {
         int x_position = this.getX();
         int y_position = this.getY();
         int new_x;
@@ -70,7 +70,7 @@ public class Position {
     }
     
     //Change position if drone flew
-    public Position changePositionFly(Compass direction) {
+    public Position changePosition(Compass direction) {
         int x_position = this.getX();
         int y_position = this.getY();
         switch(direction) {

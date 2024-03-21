@@ -20,15 +20,11 @@ public class GridSearcher {
     private int range = 0;
     private int groundRange = 0;
 
-    public GridSearcher(Compass firstDir) {
+    public GridSearcher(Compass firstDir, Compass currentDir) {
         this.initialDir = firstDir;
+        this.dirBeforeTurn = currentDir;
     }
-
-    public GridSearcher(GridSearcher searcher, Compass secondDir) {
-        this.initialDir = searcher.initialDir;
-        this.dirBeforeTurn = secondDir;
-    }
-
+    
     // Public setter for testing
     public void setStatePublic(GridSearchState gState){
         this.setState(gState);

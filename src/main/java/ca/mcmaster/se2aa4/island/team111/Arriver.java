@@ -51,10 +51,6 @@ public class Arriver {
     }
 
 
-
-
-
-
     public interface ArriverState {
         public JSONObject handle(Arriver arriver);
     }
@@ -109,8 +105,12 @@ public class Arriver {
     public JSONObject moveToIsland(JSONObject extras) {
         if (extras.has("range")) {
             int range = extras.getInt("range");
-            for (int i = 0; i<range; i++) {
+            if (range == 0) {
                 invoker.addCommand(new FlyingCommand());
+            } else {
+                for (int i = 0; i<range; i++) {
+                    invoker.addCommand(new FlyingCommand());
+                }
             }
         }
         return invoker.executeCommands();
@@ -123,8 +123,6 @@ public class Arriver {
     public boolean arrivingIsDone() {
         return arrivingDone;
     }
-
-
 
 
     public interface Command {
