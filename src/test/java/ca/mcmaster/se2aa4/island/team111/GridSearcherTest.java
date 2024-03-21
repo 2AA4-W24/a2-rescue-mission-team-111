@@ -50,7 +50,68 @@ class GridSearcherTest {
     }
 
     @Test
-    void testFindCreeks() {
-        assertTrue(true);
+    void testEchoingForwardStateInRange(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        gs.setStatePublic(gs.newEchoingForwardState());
+
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","fly");
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
+    @Test
+    void testEchoingForwardStateOutofRange(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        gs.setStatePublic(gs.newEchoingForwardState());
+
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",1);
+        JSONObject expected = new JSONObject();
+        expected.put("action","heading");
+        Information info = new Information(15, job);
+
+        expected.put("parameters", (new JSONObject()).put("direction", "E"));
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
+
+    @Test
+    void testEchoingForwardStateNormal(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+        gs.setStatePublic(gs.newEchoingForwardState());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","fly");
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
+    }
+
+    @Test
+    void testFirstTurn(){
+        GridSearcher gs = new GridSearcher(Compass.EAST, Compass.EAST);
+        gs.setStatePublic(gs.newFirstTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        JSONObject expected = new JSONObject();
+        expected.put("action","echo");
+        expected.put("parameters", (new JSONObject()).put("direction", "W"));
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        assertEquals(expected.toString(),gs.performSearch(info,pos).toString());
     }
 }
