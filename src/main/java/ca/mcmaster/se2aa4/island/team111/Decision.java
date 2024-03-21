@@ -16,6 +16,14 @@ public class Decision {
         this.direction = dir;
     }
 
+    public String getAction() {
+        return this.action;
+    }
+
+    public Compass getDir() {
+        return this.direction;
+    }
+
     public JSONObject DecisionToJSON() {
         JSONObject decision = new JSONObject();
         if (direction == null) {

@@ -18,7 +18,6 @@ public class Arriver {
     private Compass newDir;
     private boolean findingDone = false;
     private boolean arrivingDone = false;
-    private String magicWord = "action";
 
     public Arriver(Compass direction) {
         this.initialDir = direction;
@@ -28,9 +27,9 @@ public class Arriver {
         currentState = state;
     }
 
-    public JSONObject findIsland(Information info) {
+    public Decision findIsland(Information info) {
         currentInfo = info;
-        JSONObject decision = currentState.handle(this);
+        Decision decision = currentState.handle(this);
         if (findingDone) {
             if (echoingRight) {
                 newDir = initialDir.right();
@@ -52,19 +51,18 @@ public class Arriver {
 
 
     public interface ArriverState {
-        public JSONObject handle(Arriver arriver);
+        public Decision handle(Arriver arriver);
     }
 
     public class FlyingArriver implements ArriverState {
         @Override
-        public JSONObject handle(Arriver arriver) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(Arriver arriver) {
+            Decision decision;
     
             arriver.setState(new EchoingArriver());
             Compass echo = arriver.initialDir;
             Compass echoingDir = echo.right();
-            decision.put("action", "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", echoingDir.CtoS()));
+            decision = new Decision("echo", echoingDir);
     
             return decision;
         }
@@ -73,24 +71,23 @@ public class Arriver {
 
     public class EchoingArriver implements ArriverState {
         @Override
-        public JSONObject handle(Arriver arriver) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(Arriver arriver) {
+            Decision decision;
             Information I = arriver.currentInfo;
             JSONObject extras = I.getExtra();
     
             if (extras.get("found").equals("GROUND")) {
                 arriver.findingDone = true;
-                decision.put("action", "fly");
+                decision = new Decision("fly");
             } else {
                 if (arriver.echoingRight) {
                     arriver.setState(new EchoingArriver());
                     Compass echo = arriver.initialDir;
-                    Compass echoingDir = echo.left();
-                    decision.put("action", "echo");
-                    decision.put("parameters", (new JSONObject()).put("direction", echoingDir.CtoS()));
+                    Compass echoingDir = echo.left();;
+                    decision = new Decision("echo", echoingDir);
                 } else {
                     arriver.setState(new FlyingArriver());
-                    decision.put("action", "fly");
+                    decision = new Decision("fly");
                 }
                 arriver.echoingRight = !(arriver.echoingRight);
             }
@@ -102,7 +99,7 @@ public class Arriver {
 
 
 
-    public JSONObject moveToIsland(JSONObject extras) {
+    public Decision moveToIsland(JSONObject extras) {
         if (extras.has("range")) {
             int range = extras.getInt("range");
             if (range == 0) {
@@ -126,7 +123,7 @@ public class Arriver {
 
 
     public interface Command {
-        public JSONObject execute();
+        public Decision execute();
     }
 
     public class TurningCommand implements Command {
@@ -137,11 +134,9 @@ public class Arriver {
         }
     
         @Override
-        public JSONObject execute() {
-            JSONObject decision = new JSONObject();
-    
-            decision.put(magicWord, "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+        public Decision execute() {
+            Decision decision;
+            decision = new Decision("heading", turningDir);
     
             return decision;
         }
@@ -150,9 +145,10 @@ public class Arriver {
 
     public class FlyingCommand implements Command {
         @Override
-        public JSONObject execute() {
-            JSONObject decision = new JSONObject();
-            decision.put(magicWord, "fly");
+        public Decision execute() {
+            Decision decision;
+    
+            decision = new Decision("fly");
             return decision;
         }
     }
@@ -165,11 +161,10 @@ public class Arriver {
         }
     
         @Override
-        public JSONObject execute() {
-            JSONObject decision = new JSONObject();
+        public Decision execute() {
+            Decision decision;
     
-            decision.put(magicWord, "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", echoingDir.CtoS()));
+            decision = new Decision("echo", echoingDir);
     
             return decision;
         }
@@ -183,7 +178,7 @@ public class Arriver {
             commands.offer(command);
         }
     
-        public JSONObject executeCommands() {
+        public Decision executeCommands() {
             if (commands.size() == 1) {
                 arrivingDone = true;
             }

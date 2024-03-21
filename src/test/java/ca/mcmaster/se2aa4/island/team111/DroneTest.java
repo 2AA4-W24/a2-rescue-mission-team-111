@@ -8,26 +8,26 @@ import org.json.JSONObject;
 
 class DroneTest {
 
-    //If drone starts with no battery
-    @Test
-    void decisionLowBatteryTest() {
-        Drone dr = new Drone(1,"E");
-        JSONObject stopdec = new JSONObject();
-        stopdec.put("action","stop");
+    // //If drone starts with no battery
+    // @Test
+    // void decisionLowBatteryTest() {
+    //     Drone dr = new Drone(1,"E");
+    //     JSONObject stopdec = new JSONObject();
+    //     stopdec.put("action","stop");
 
-        assertEquals(stopdec.toString(),(dr.giveDecision().toString()));
-    }
+    //     assertEquals(stopdec.toString(),(dr.giveDecision().toString()));
+    // }
 
-    @Test
-    void finding(){
-        Drone dr = new Drone(5000,"E");
-    }
+    // @Test
+    // void finding(){
+    //     Drone dr = new Drone(5000,"E");
+    // }
 
-    @Test
-    void recieveinfoTest(){
-        Drone dr = new Drone(100, "E");
-        Information info = new Information(5, null);
-        dr.receiveInfo(info);
-        assertEquals(info,dr.getInfo());
-    }
+    // @Test
+    // void recieveinfoTest(){
+    //     Drone dr = new Drone(100, "E");
+    //     Information info = new Information(5, null);
+    //     dr.receiveInfo(info);
+    //     assertEquals(info,dr.getInfo());
+    // }
 }

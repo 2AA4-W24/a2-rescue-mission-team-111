@@ -12,7 +12,6 @@ public class Drone {
     private Arriver a1;
     private GridSearcher g1;
     private Information current_info = new Information(0, new JSONObject());
-    private String magicWord = "action";
 
     public Drone(Integer charge, String dir) {
         this.battery = new Battery(charge);
@@ -40,18 +39,17 @@ public class Drone {
     }
 
 
-    public JSONObject giveDecision() {
-        JSONObject decision = new JSONObject();
+    public Decision giveDecision() {
+        Decision decision;
         //If battery is low, stop
         if (battery.isLow()) {
-            decision.put(magicWord, "stop");
-            return decision;
+            return new Decision("stop");
         }
 
         switch(current_state) {
             case FINDING:
                 decision = a1.findIsland(current_info);
-                if (decision.get(magicWord) == "fly") {
+                if (decision.getAction() == "fly") {
                     pos = pos.changePosition(direction);
                 }
                 if (a1.findingIsDone()) {
@@ -60,12 +58,11 @@ public class Drone {
                 return decision;
             case ARRIVING: 
                 decision = a1.moveToIsland(current_info.getExtra());
-                if (decision.get(magicWord) == "fly") {
+                if (decision.getAction() == "fly") {
                     pos = pos.changePosition(direction);
-                } else if (decision.get(magicWord) == "heading") {
-                    JSONObject parameters = decision.getJSONObject("parameters");
+                } else if (decision.getAction() == "heading") {
                     Compass old_dir = direction;
-                    direction = direction.StoC(parameters.getString("direction"));
+                    direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
                 }
                 if (a1.arrivingIsDone()) {
@@ -75,17 +72,16 @@ public class Drone {
                 return decision;
             case SEARCHING:
                 decision = g1.performSearch(current_info, pos);
-                if (decision.get(magicWord) == "heading") {
-                    JSONObject parameters = decision.getJSONObject("parameters");
+                if (decision.getAction() == "heading") {
                     Compass old_dir = direction;
-                    direction = direction.StoC(parameters.getString("direction"));
+                    direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
-                } else if (decision.get(magicWord) == "fly") {
+                } else if (decision.getAction() == "fly") {
                     pos = pos.changePosition(direction);
                 }
                 return decision;
         }
-        return decision;
+        return new Decision("stop");
     }
 
     public String giveClosest() {

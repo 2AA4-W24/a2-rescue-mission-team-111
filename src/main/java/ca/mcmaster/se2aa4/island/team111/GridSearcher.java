@@ -24,7 +24,7 @@ public class GridSearcher {
         this.initialDir = firstDir;
         this.dirBeforeTurn = currentDir;
     }
-    
+
     // Public setter for testing
     public void setStatePublic(GridSearchState gState){
         this.setState(gState);
@@ -34,7 +34,7 @@ public class GridSearcher {
         currentState = gState;
     }
 
-    public JSONObject performSearch(Information info, Position pos) {
+    public Decision performSearch(Information info, Position pos) {
         this.currentInfo = info;
         this.currentPos = pos;
         return currentState.handle(this);
@@ -80,7 +80,7 @@ public class GridSearcher {
     }
 
     private interface GridSearchState {
-        JSONObject handle(GridSearcher searcher);
+        public Decision handle(GridSearcher searcher);
     }
 
     // Public access to gstates
@@ -98,50 +98,46 @@ public class GridSearcher {
     private class CheckingDone implements GridSearchState {
 
         @Override
-        public JSONObject handle(GridSearcher searcher) {
+        public Decision handle(GridSearcher searcher) {
             Information I = searcher.currentInfo;
             JSONObject extras = I.getExtra();
-            JSONObject decision = new JSONObject();
+            Decision decision;
 
             if (extras.get("found").equals("OUT_OF_RANGE")) {
-                decision.put("action", "stop");
-                return decision;
+                decision = new Decision("stop");
             } else {
                 searcher.setState(new FlyWideTurn());
-                decision.put("action", "fly");
-                return decision;
+                decision = new Decision("fly");
             }
+            return decision;
         }
     }
 
     private class EchoingForwardState implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
+        public Decision handle(GridSearcher searcher) {
             Information I = searcher.currentInfo;
             JSONObject extras = I.getExtra();
-            JSONObject decision = new JSONObject();
+            Decision decision;
 
             if (extras.get("found").equals("OUT_OF_RANGE")) {
                 range = extras.getInt("range");
                 if (extras.getInt("range") > 2) {
                     searcher.setState(new FlyWideTurn());
-                    decision.put("action", "fly");
-                    return decision;
+                    decision = new Decision("fly");
                 } else {
                     searcher.setState(new FirstTurn());
                     Compass turningDir = searcher.initialDir;
-                    decision.put("action", "heading");
-                    decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
-                    return decision;  
+                    decision = new Decision("heading", turningDir);
                 }
             } else {
                 if (extras.getInt("range") > 1) {
                     groundRange = extras.getInt("range");
                 }
                 searcher.setState(new FlyingSearcher());
-                decision.put("action", "fly");
-                return decision;
+                decision = new Decision("fly");
             }
+            return decision;
 
         } 
 
@@ -149,13 +145,12 @@ public class GridSearcher {
 
     private class FirstTurn implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
             searcher.setState(new CheckingDone());
             Compass dir_before_turn = searcher.dirBeforeTurn;
             Compass echoingDir = dir_before_turn.opposite();
-            decision.put("action", "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", echoingDir.CtoS()));
+            decision = new Decision("echo", echoingDir);
             return decision;
             
         } 
@@ -163,17 +158,17 @@ public class GridSearcher {
 
     private class FlyingSearcher implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
 
             if (searcher.groundRange > 2) {
                 searcher.setState(new FlyingSearcher());
                 groundRange--;
-                decision.put("action", "fly");
+                decision = new Decision("fly");
                 return decision;
             }
             searcher.setState(new ScanningState());
-            decision.put("action", "scan");
+            decision = new Decision("scan");
             return decision;
         } 
 
@@ -181,26 +176,24 @@ public class GridSearcher {
 
     private class FlyWideTurn implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
 
             if (searcher.range > 3) {
                 range = 3;
-                decision.put("action", "fly");
+                decision = new Decision("fly");
                 return decision;
             }  else if (searcher.range > 2) {
                 range = 2;
                 Compass turningDir = searcher.initialDir;
                 searcher.setState(new FirstTurn());
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+                decision = new Decision("heading", turningDir);
                 return decision;
             } else {
                 searcher.setState(new SecondTurn());
                 Compass dir_before_turn = searcher.dirBeforeTurn;
                 Compass turningDir = dir_before_turn.opposite();
-                decision.put("action", "heading");
-                decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+                decision = new Decision("heading", turningDir);
                 return decision;
             }
         } 
@@ -209,11 +202,11 @@ public class GridSearcher {
     private class FourthTurn implements GridSearchState {
 
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
             searcher.setState(new FlyingSearcher());
             dirBeforeTurn = dirBeforeTurn.opposite();
-            decision.put("action", "scan");
+            decision = new Decision("scan");
             return decision;
         } 
     }
@@ -221,10 +214,10 @@ public class GridSearcher {
     private class ScanningState implements GridSearchState {
 
         @Override
-        public JSONObject handle(GridSearcher searcher) {
+        public Decision handle(GridSearcher searcher) {
             Information I = searcher.currentInfo;
             JSONObject extras = I.getExtra();
-            JSONObject decision = new JSONObject();
+            Decision decision;
 
             JSONArray c = extras.getJSONArray("creeks");
             if (!c.isEmpty()) {
@@ -245,40 +238,38 @@ public class GridSearcher {
             for (int i = 0; i<biomes.length(); i++) {
                 if (!(biomes.get(i).equals("OCEAN"))) {
                     searcher.setState(new FlyingSearcher());
-                    decision.put("action", "fly");
+                    decision = new Decision("fly");
                     return decision;
                 }
             }
             Compass echoingDir = searcher.dirBeforeTurn;
             searcher.setState(new EchoingForwardState());
-            decision.put("action", "echo");
-            decision.put("parameters", (new JSONObject()).put("direction", echoingDir.CtoS()));
+            decision = new Decision("echo", echoingDir);
             return decision;
         }
     }
 
     private class SecondTurn implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
+
             searcher.setState(new ThirdTurn());
             Compass initial_dir = searcher.initialDir;
             Compass turningDir = initial_dir.opposite();
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+            decision = new Decision("heading", turningDir);
             return decision;
         } 
     }
 
     private class ThirdTurn implements GridSearchState {
         @Override
-        public JSONObject handle(GridSearcher searcher) {
-            JSONObject decision = new JSONObject();
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
             searcher.setState(new FourthTurn());
             Compass dir_before_turn = searcher.dirBeforeTurn;
             Compass turningDir = dir_before_turn.opposite();
-            decision.put("action", "heading");
-            decision.put("parameters", (new JSONObject()).put("direction", turningDir.CtoS()));
+            decision = new Decision("heading", turningDir);
             return decision;
         } 
     }
