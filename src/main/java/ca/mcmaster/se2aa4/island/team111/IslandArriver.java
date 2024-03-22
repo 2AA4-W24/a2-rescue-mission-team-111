@@ -29,6 +29,7 @@ public class IslandArriver implements Arrivable {
 
     @Override
     public Decision find() {
+        JSONObject extras = currentInfo.getExtra();
         Decision decision = currentState.handle(this);
         if (findingDone) {
             if (echoingRight) {
@@ -37,12 +38,18 @@ public class IslandArriver implements Arrivable {
                 newDir = initialDir.left();
             }
 
+
             invoker = new Invoker();
-            invoker.addCommand(new TurningCommand(newDir));
-            invoker.addCommand(new TurningCommand(initialDir.opposite()));
-            invoker.addCommand(new TurningCommand(newDir));
-            invoker.addCommand(new EchoingCommand(newDir));
-            invoker.addCommand(new FlyingCommand());
+
+            if (extras.getInt("range") == 0) {
+                invoker.addCommand(new TurningCommand(newDir));
+            } else {
+                invoker.addCommand(new TurningCommand(newDir));
+                invoker.addCommand(new TurningCommand(initialDir.opposite()));
+                invoker.addCommand(new TurningCommand(newDir));
+                invoker.addCommand(new EchoingCommand(newDir));
+                invoker.addCommand(new FlyingCommand());
+            }
         }
         return decision;
     }

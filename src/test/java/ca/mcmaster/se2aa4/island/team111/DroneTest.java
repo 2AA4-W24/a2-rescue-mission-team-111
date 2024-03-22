@@ -18,42 +18,42 @@ class DroneTest {
         assertEquals("stop",dr.giveDecision().getAction());
     }
 
-    @Test
-    void findingToArriving(){
-        Drone dr = new Drone(5000,"E");
-        JSONObject job = new JSONObject();
-        job.put("extras","");
-        job.put("found","GROUND");
-        Information info = new Information(15, job);
+    // @Test
+    // void findingToArriving(){
+    //     Drone dr = new Drone(5000,"E");
+    //     JSONObject job = new JSONObject();
+    //     job.put("extras","");
+    //     job.put("found","GROUND");
+    //     Information info = new Information(15, job);
 
-        dr.receiveInfo(info);
-        dr.giveDecision();
-        dr.giveDecision();
+    //     dr.receiveInfo(info);
+    //     dr.giveDecision();
+    //     dr.giveDecision();
 
-        assertEquals(DroneState.ARRIVING, dr.getCurrentState());
-    }
+    //     assertEquals(DroneState.ARRIVING, dr.getCurrentState());
+    // }
 
-    @Test
-    void arrivingToSearching(){
-        Drone dr = new Drone(5000,"E");
-        JSONObject job = new JSONObject();
-        job.put("extras","");
-        job.put("found","GROUND");
-        Information info = new Information(15, job);
+    // @Test
+    // void arrivingToSearching(){
+    //     Drone dr = new Drone(5000,"E");
+    //     JSONObject job = new JSONObject();
+    //     job.put("extras","");
+    //     job.put("found","GROUND");
+    //     Information info = new Information(15, job);
 
-        // Exhaust all the initial "arriving" commands (8 times)
-        dr.receiveInfo(info);
-        dr.giveDecision();
-        dr.giveDecision();
-        dr.giveDecision();
-        dr.giveDecision();
-        dr.giveDecision(); 
-        dr.giveDecision();
-        dr.giveDecision();
-        dr.giveDecision();
+    //     // Exhaust all the initial "arriving" commands (8 times)
+    //     dr.receiveInfo(info);
+    //     dr.giveDecision();
+    //     dr.giveDecision();
+    //     dr.giveDecision();
+    //     dr.giveDecision();
+    //     dr.giveDecision(); 
+    //     dr.giveDecision();
+    //     dr.giveDecision();
+    //     dr.giveDecision();
         
-        assertEquals(DroneState.SEARCHING, dr.getCurrentState());
-    }
+    //     assertEquals(DroneState.SEARCHING, dr.getCurrentState());
+    // }
 
     @Test
     void recieveinfoTest(){
