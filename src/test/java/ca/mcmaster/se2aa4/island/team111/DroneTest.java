@@ -2,7 +2,7 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import org.junit.jupiter.api.Test;
 
-import ca.mcmaster.se2aa4.island.team111.Arriver.EchoingArriver;
+import ca.mcmaster.se2aa4.island.team111.IslandArriver.EchoingArriver;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -2,13 +2,9 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import java.util.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-public class Arriver {
-
-    private final Logger logger = LogManager.getLogger();
+public class IslandArriver implements Arrivable {
 
     private ArriverState currentState = new FlyingArriver();
     private Information currentInfo;
@@ -19,7 +15,7 @@ public class Arriver {
     private boolean findingDone = false;
     private boolean arrivingDone = false;
 
-    public Arriver(Compass direction) {
+    public IslandArriver(Compass direction) {
         this.initialDir = direction;
     }
 
@@ -27,8 +23,12 @@ public class Arriver {
         currentState = state;
     }
 
-    public Decision findIsland(Information info) {
+    public void updateInfo(Information info) {
         currentInfo = info;
+    }
+
+    @Override
+    public Decision find() {
         Decision decision = currentState.handle(this);
         if (findingDone) {
             if (echoingRight) {
@@ -39,9 +39,7 @@ public class Arriver {
 
             invoker = new Invoker();
             invoker.addCommand(new TurningCommand(newDir));
-            logger.info(newDir);
             invoker.addCommand(new TurningCommand(initialDir.opposite()));
-            logger.info(initialDir.opposite());
             invoker.addCommand(new TurningCommand(newDir));
             invoker.addCommand(new EchoingCommand(newDir));
             invoker.addCommand(new FlyingCommand());
@@ -51,12 +49,12 @@ public class Arriver {
 
 
     public interface ArriverState {
-        public Decision handle(Arriver arriver);
+        public Decision handle(IslandArriver arriver);
     }
 
     public class FlyingArriver implements ArriverState {
         @Override
-        public Decision handle(Arriver arriver) {
+        public Decision handle(IslandArriver arriver) {
             Decision decision;
     
             arriver.setState(new EchoingArriver());
@@ -71,7 +69,7 @@ public class Arriver {
 
     public class EchoingArriver implements ArriverState {
         @Override
-        public Decision handle(Arriver arriver) {
+        public Decision handle(IslandArriver arriver) {
             Decision decision;
             Information I = arriver.currentInfo;
             JSONObject extras = I.getExtra();
@@ -96,10 +94,9 @@ public class Arriver {
         }
     }
 
-
-
-
-    public Decision moveToIsland(JSONObject extras) {
+    @Override
+    public Decision moveTo() {
+        JSONObject extras = currentInfo.getExtra();
         if (extras.has("range")) {
             int range = extras.getInt("range");
             if (range == 0) {

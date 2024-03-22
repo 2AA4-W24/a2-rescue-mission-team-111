@@ -9,7 +9,7 @@ public class Drone {
     private Compass initialDir;
     private Compass direction;
     private DroneState current_state = DroneState.FINDING;
-    private Arriver a1;
+    private IslandArriver islandArriver;
     private GridSearcher g1;
     private Information current_info = new Information(0, new JSONObject());
      
@@ -20,7 +20,7 @@ public class Drone {
         Compass direc = compass.StoC(dir);
         this.initialDir = direc;
         this.direction = direc;
-        this.a1 = new Arriver(direc);
+        this.islandArriver = new IslandArriver(direc);
     }
 
     // Getter for current info
@@ -49,17 +49,19 @@ public class Drone {
 
         switch(current_state) {
             case FINDING:
-                decision = a1.findIsland(current_info);
+                islandArriver.updateInfo(current_info);
+                decision = islandArriver.find();
                 String instruction1 = decision.getAction();
                 if (instruction1.equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
-                if (a1.findingIsDone()) {
+                if (islandArriver.findingIsDone()) {
                     current_state = current_state.nextState();
                 }
                 return decision;
             case ARRIVING: 
-                decision = a1.moveToIsland(current_info.getExtra());
+                islandArriver.updateInfo(current_info);
+                decision = islandArriver.moveTo();
                 String instruction2 = decision.getAction();
                 if (instruction2.equals("fly")) {
                     pos = pos.changePosition(direction);
@@ -68,7 +70,7 @@ public class Drone {
                     direction = decision.getDir();
                     pos = pos.changePosition(old_dir, direction);
                 }
-                if (a1.arrivingIsDone()) {
+                if (islandArriver.arrivingIsDone()) {
                     this.g1 = new GridSearcher(initialDir, direction);
                     current_state = current_state.nextState();
                 }
