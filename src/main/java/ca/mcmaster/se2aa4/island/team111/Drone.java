@@ -43,7 +43,7 @@ public class Drone {
     public Decision giveDecision() {
         Decision decision;
         //If battery is low, stop
-        if (battery.isLow()) {
+        if (battery.isLow(pos)) {
             return new Decision("stop");
         }
 

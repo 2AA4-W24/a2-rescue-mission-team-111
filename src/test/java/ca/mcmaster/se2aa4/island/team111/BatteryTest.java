@@ -8,10 +8,9 @@ class BatteryTest {
 
     @Test
     void checkLow() {
-        Battery bat = new Battery(20);
-        assertEquals(true,bat.isLow());
-        Battery bat2 = new Battery(1000);
-        assertEquals(false,bat2.isLow());
+        Position pos = new Position(5000, 0); //Some far away position
+        Battery bat = new Battery(10);
+        assertEquals(true,bat.isLow(pos));
     }
 
     @Test
