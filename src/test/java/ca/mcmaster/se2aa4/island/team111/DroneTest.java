@@ -1,6 +1,9 @@
 package ca.mcmaster.se2aa4.island.team111;
 
 import org.junit.jupiter.api.Test;
+
+import ca.mcmaster.se2aa4.island.team111.Arriver.EchoingArriver;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.json.JSONObject;
@@ -16,8 +19,40 @@ class DroneTest {
     }
 
     @Test
-    void finding(){
+    void findingToArriving(){
         Drone dr = new Drone(5000,"E");
+        JSONObject job = new JSONObject();
+        job.put("extras","");
+        job.put("found","GROUND");
+        Information info = new Information(15, job);
+
+        dr.receiveInfo(info);
+        dr.giveDecision();
+        dr.giveDecision();
+
+        assertEquals(DroneState.ARRIVING, dr.getCurrentState());
+    }
+
+    @Test
+    void arrivingToSearching(){
+        Drone dr = new Drone(5000,"E");
+        JSONObject job = new JSONObject();
+        job.put("extras","");
+        job.put("found","GROUND");
+        Information info = new Information(15, job);
+
+        // Exhaust all the initial "arriving" commands (8 times)
+        dr.receiveInfo(info);
+        dr.giveDecision();
+        dr.giveDecision();
+        dr.giveDecision();
+        dr.giveDecision();
+        dr.giveDecision(); 
+        dr.giveDecision();
+        dr.giveDecision();
+        dr.giveDecision();
+        
+        assertEquals(DroneState.SEARCHING, dr.getCurrentState());
     }
 
     @Test

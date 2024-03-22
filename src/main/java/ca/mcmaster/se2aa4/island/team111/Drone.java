@@ -27,16 +27,16 @@ public class Drone {
     public Information getInfo(){
         return current_info;
     }
-    
-    // Public setter for drone state
-    public void setState(DroneState ds){
-        this.current_state = ds;
-    }
 
     //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         current_info = I;
         battery.depleteCharge(I.getCost());
+    }
+
+    //Getter for current state
+    public DroneState getCurrentState(){
+        return this.current_state;
     }
 
 
@@ -51,7 +51,6 @@ public class Drone {
             case FINDING:
                 decision = a1.findIsland(current_info);
                 String instruction1 = decision.getAction();
-
                 if (instruction1.equals("fly")) {
                     pos = pos.changePosition(direction);
                 }

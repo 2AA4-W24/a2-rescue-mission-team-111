@@ -69,7 +69,6 @@ class GridSearcherTest {
 
     @Test
     void testCheckDistance(){
-        POI site = new POI("site",new Position(0,0));
         double result = gs.getDistanceTest(new POI("id1",new Position(-2,0)));
         assertEquals(2,result);
     }
@@ -160,7 +159,6 @@ class GridSearcherTest {
         JSONObject job = new JSONObject();
         job.put("found","");
         job.put("range",5);
-        JSONObject expected = new JSONObject();
         Information info = new Information(15, job);
 
         Position pos = new Position(0, 0);
