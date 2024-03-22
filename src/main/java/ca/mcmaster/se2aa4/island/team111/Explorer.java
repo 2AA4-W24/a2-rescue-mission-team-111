@@ -12,8 +12,7 @@ public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
 
-    private Translator t = new Translator();
-    public Drone drone;
+    private Drone drone;
 
     @Override
     public void initialize(String s) {
@@ -29,8 +28,12 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String takeDecision() {
+
         Decision decision = drone.giveDecision();
-        JSONObject finalDecision = decision.DecisionToJSON();
+
+        DecisionTranslator decisionTranslator = new DecisionTranslator(decision);
+        decisionTranslator.translate();
+        JSONObject finalDecision = decisionTranslator.getDecision();
 
         return finalDecision.toString();
     }
@@ -38,8 +41,10 @@ public class Explorer implements IExplorerRaid {
     @Override
     public void acknowledgeResults(String s) {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
-        Information I = t.translate(response);
-        drone.receiveInfo(I);
+        ResponseTranslator responseTranslator = new ResponseTranslator(response);
+        responseTranslator.translate();
+        Information info = responseTranslator.getInfo();
+        drone.receiveInfo(info);
         logger.info("** Response received:\n"+response.toString(2));
         Integer cost = response.getInt("cost");
         logger.info("The cost of the action was {}", cost);
