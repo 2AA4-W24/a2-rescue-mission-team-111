@@ -11,8 +11,11 @@ public class Battery {
         charge -= cost;
     }
 
-    public boolean isLow() {
-        return charge < 30; //30 magic number, deal with it later
+    public boolean isLow(Position pos) {
+        double x = pos.getX();
+        double y = pos.getY();
+        double minCharge = (Math.sqrt((x*x)+(y*y))*0.2) + 20; //Equation derived from multiple tests with "stop" command
+        return charge <= minCharge;
     }
 
     public int getCharge() {
