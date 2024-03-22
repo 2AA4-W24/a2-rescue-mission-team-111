@@ -10,7 +10,7 @@ public class Drone {
     private Compass direction;
     private DroneState current_state = DroneState.FINDING;
     private IslandArriver islandArriver;
-    private GridSearcher g1;
+    private GridSearcher gridSearcher;
     private Information current_info = new Information(0, new JSONObject());
      
 
@@ -71,12 +71,13 @@ public class Drone {
                     pos = pos.changePosition(old_dir, direction);
                 }
                 if (islandArriver.arrivingIsDone()) {
-                    this.g1 = new GridSearcher(initialDir, direction);
+                    this.gridSearcher = new GridSearcher(initialDir, direction);
                     current_state = current_state.nextState();
                 }
                 return decision;
             case SEARCHING:
-                decision = g1.performSearch(current_info, pos);
+                gridSearcher.updateInfo(current_info, pos);
+                decision = gridSearcher.performSearch();
                 String instruction3 = decision.getAction();
                 if (instruction3.equals("heading")) {
                     Compass old_dir = direction;
@@ -91,6 +92,6 @@ public class Drone {
     }
 
     public String giveClosest() {
-        return g1.calculateClosest();
+        return gridSearcher.calculateClosest();
     }
 }

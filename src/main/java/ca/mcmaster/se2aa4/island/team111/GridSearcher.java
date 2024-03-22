@@ -5,7 +5,7 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class GridSearcher {
+public class GridSearcher implements Searchable {
 
     private GridSearchState currentState = new FlyingSearcher();
     private Information currentInfo;
@@ -34,9 +34,13 @@ public class GridSearcher {
         currentState = gState;
     }
 
-    public Decision performSearch(Information info, Position pos) {
+    public void updateInfo(Information info, Position pos) {
         this.currentInfo = info;
         this.currentPos = pos;
+    }
+
+    @Override
+    public Decision performSearch() {
         return currentState.handle(this);
     }
 
