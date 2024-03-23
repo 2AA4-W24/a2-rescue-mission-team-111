@@ -44,29 +44,9 @@ public class GridSearcher implements Searchable {
         return currentState.handle(this);
     }
 
-    // For Testing
-    public Integer creeksAmount(){
-        return creeks.size();
-    }
-    // For Testing
-    public Position sitePosition(){
-        return new Position(site.getXvalue(), site.getYvalue());
-    }
-
     public String calculateClosest() {
         Calculator calculator = new Calculator(creeks, site);
         return calculator.calculateClosest();
-    }
-
-    public double getDistanceTest(POI creek){
-        return getDistance(creek);
-    }
-
-    //Uses pythagorean mathematics to check distance
-    private double getDistance(POI creek) {
-        double x = Math.abs(site.getXvalue()-creek.getXvalue());
-        double y = Math.abs(site.getYvalue()-creek.getYvalue());
-        return Math.sqrt((x*x) + (y*y));
     }
 
     private interface GridSearchState {

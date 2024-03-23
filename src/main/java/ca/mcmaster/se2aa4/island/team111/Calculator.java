@@ -21,15 +21,15 @@ public class Calculator {
 
         POI closestCreek = creeks.get(0);
         for (int i = 1; i<creeks.size(); i++) {
-            POI this_creek = creeks.get(i);
-            if (getDistance(this_creek) < getDistance(closestCreek)) {
-                closestCreek = this_creek;
+            POI thisCreek = creeks.get(i);
+            if (getDistance(thisCreek) < getDistance(closestCreek)) {
+                closestCreek = thisCreek;
             }
         }
         return closestCreek.getID();
     }
 
-    public double getDistanceTest(POI creek){
+        public double getDistanceTest(POI creek){
         return getDistance(creek);
     }
 
