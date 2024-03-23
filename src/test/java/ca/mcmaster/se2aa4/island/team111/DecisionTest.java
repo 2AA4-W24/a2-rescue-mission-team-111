@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 class DecisionTest {
 
+    // Testing the conversion from Decision to JSON action
     @Test
     public void decToJSON() {
         Decision dec = new Decision("fly");
@@ -18,6 +19,8 @@ class DecisionTest {
         expectedjob.put("action","fly");
         assertEquals(expectedjob.toString(), decT.getDecision().toString());
     }
+
+    // Testing the conversion from Decision to JSON action, including the heading (N,W,E,S)
     @Test
     public void decToJSONWithHeading() {
         Decision dec = new Decision("echo",Compass.EAST);

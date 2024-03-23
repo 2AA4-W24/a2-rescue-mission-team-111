@@ -30,6 +30,16 @@ public class GridSearcher implements Searchable {
         this.setState(gState);
     }
 
+    // Public getter for testing
+    public POI giveSite(){
+        return this.site;
+    }
+
+    // Public getter for testing
+    public int creeksAmount(){
+        return this.creeks.size();
+    }
+
     private void setState(GridSearchState gState) {
         currentState = gState;
     }
