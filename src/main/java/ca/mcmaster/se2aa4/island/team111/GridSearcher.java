@@ -44,7 +44,7 @@ public class GridSearcher implements Searchable {
         return currentState.handle(this);
     }
 
-    public String calculateClosest() {
+    public String giveClosestCreek() {
         Calculator calculator = new Calculator(creeks, site);
         return calculator.calculateClosest();
     }

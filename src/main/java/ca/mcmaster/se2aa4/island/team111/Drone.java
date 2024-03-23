@@ -97,6 +97,6 @@ public class Drone {
     }
 
     public String giveClosest() {
-        return gridSearcher.calculateClosest();
+        return gridSearcher.giveClosestCreek();
     }
 }
