@@ -54,22 +54,8 @@ public class GridSearcher implements Searchable {
     }
 
     public String calculateClosest() {
-
-        if (creeks.isEmpty()) {
-            return "No creeks found";
-        } else if (site.getID().equals("null")) {
-            POI lastCreek = creeks.get(creeks.size()-1);
-            return lastCreek.getID();
-        }
-
-        POI closest_creek = creeks.get(0);
-        for (int i = 1; i<creeks.size(); i++) {
-            POI this_creek = creeks.get(i);
-            if (getDistance(this_creek) < getDistance(closest_creek)) {
-                closest_creek = this_creek;
-            }
-        }
-        return closest_creek.getID();
+        Calculator calculator = new Calculator(creeks, site);
+        return calculator.calculateClosest();
     }
 
     public double getDistanceTest(POI creek){
