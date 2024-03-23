@@ -117,10 +117,12 @@ public class IslandArriver implements Findable, Arrivable {
         return invoker.executeCommands();
     }
 
+    @Override
     public boolean findingIsDone() {
         return findingDone;
     }
 
+    @Override
     public boolean arrivingIsDone() {
         return arrivingDone;
     }
