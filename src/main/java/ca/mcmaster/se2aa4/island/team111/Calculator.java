@@ -29,12 +29,8 @@ public class Calculator {
         return closestCreek.getID();
     }
 
-        public double getDistanceTest(POI creek){
-        return getDistance(creek);
-    }
-
     //Uses pythagorean mathematics to check distance
-    private double getDistance(POI creek) {
+    public double getDistance(POI creek) {
         double x = Math.abs(site.getXvalue()-creek.getXvalue());
         double y = Math.abs(site.getYvalue()-creek.getYvalue());
         return Math.sqrt((x*x) + (y*y));

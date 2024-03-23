@@ -9,8 +9,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 
-class TranslatorTest {
+class ResponseTranslatorTest {
 
+    // Test correctness for translating from JSONObject response to type Decision 
     @Test
     void checkTranslateCorrectness() {
         String example = "{\"cost\":16,\"extras\":{},\"status\":\"OK\"}";
@@ -19,9 +20,11 @@ class TranslatorTest {
 
         Information info = new Information(16, extra);
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(example)));
-        ResponseTranslator trans = new ResponseTranslator(response);
+        ResponseTranslator rtrans = new ResponseTranslator(response);
+        rtrans.translate();
+        Information newinfo = rtrans.getInfo();
 
-        // assertEquals(info.getCost(),trans.translate().getCost());
-        // assertEquals(info.getExtra().toString(),trans.translate().getExtra().toString());
+        assertEquals(info.getCost(),newinfo.getCost());
+        assertEquals(info.getExtra().toString(),newinfo.getExtra().toString());
     }
 }

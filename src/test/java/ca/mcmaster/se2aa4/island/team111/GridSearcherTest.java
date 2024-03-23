@@ -3,6 +3,9 @@ package ca.mcmaster.se2aa4.island.team111;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,371 +13,340 @@ import org.junit.jupiter.api.Test;
 
 class GridSearcherTest {
     
-    // private GridSearcher gs;
+    private GridSearcher gs;
 
-    // @BeforeEach
-    // void init(){
-    //     gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
-    // }
+    @BeforeEach
+    void init(){
+        gs = new GridSearcher(Compass.EAST, Compass.SOUTH);
+    }
 
-    // @Test 
-    // void calculateClosestNoCreeks(){
-    //     assertEquals("No creeks found", gs.calculateClosest());
-    // }
+    // Tests if drone will stop if it gets OUT_OF_RANGE during CheckingDone state
+    @Test
+    void testCheckingDoneOutOfRange() {
+        gs.setStatePublic(gs.newCheckingDone());
 
-    // @Test
-    // void calculateClosestWithCreeks(){
-    //     gs.setStatePublic(gs.newScanningState());
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        Information info = new Information(15, job);
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("stop",dec.getAction());
 
-    //     JSONArray creekArray = new JSONArray();
-    //     JSONArray siteArray = new JSONArray();
-    //     JSONArray biomeArray = new JSONArray();
+    }
 
-    //     job.put("creeks",creekArray);
-    //     job.put("sites",siteArray);
-    //     job.put("biomes",biomeArray);
+    // Tests if drone will continue flying during CheckingDrone state
+    @Test
+    void testCheckingDoneInRange(){
+        gs.setStatePublic(gs.newCheckingDone());
 
-    //     Information info = new Information(15, job);
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        Information info = new Information(15, job);
 
-    //     // Simulate at position
-    //     creekArray.put("creekfar");
-    //     gs.updateInfo(info, new Position(52, 1000));
-    //     gs.performSearch();
-    //     creekArray.clear();
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("fly",dec.getAction());
+    }
 
-    //     JSONObject job2 = new JSONObject();
-    //     job2.put("found","");
-    //     job2.put("range",5);
+    // Tests if the EchoingForward state will continue flying in long range
+    @Test
+    void testEchoingForwardStateSafeRange(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     creekArray = new JSONArray();
-    //     siteArray = new JSONArray();
-    //     biomeArray = new JSONArray();
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",5);
+        Information info = new Information(15, job);
 
-    //     job2.put("creeks",creekArray);
-    //     job2.put("sites",siteArray);
-    //     job2.put("biomes",biomeArray);
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("fly",dec.getAction());
+    }
 
-    //     info = new Information(15, job2);
-    //     // Simulate at position 2
-    //     creekArray.put("creekclose");
-    //     gs.setStatePublic(gs.newScanningState());
-    //     gs.updateInfo(info, new Position(1, 1));
-    //     gs.performSearch();
+    // Tests if the EchoingForward state will change it's heading if flying in short range
+    @Test
+    void testEchoingForwardStateOutofRange(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     //After scanning, check the closest creek
-    //     assertEquals("creekclose", gs.calculateClosest());
-    // }
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",1);
+        Information info = new Information(15, job);
 
-    // @Test
-    // void testCheckDistance(){
-    //     double result = gs.getDistanceTest(new POI("id1",new Position(-2,0)));
-    //     assertEquals(2,result);
-    // }
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("heading",dec.getAction());
+        assertEquals(Compass.EAST,dec.getDir());
+    }
 
-    // @Test
-    // void testCheckingDone() {
-    //     gs.setStatePublic(gs.newCheckingDone());
+    // Tests if the EchoingForward state will continue flying if GROUND has been scanned in front of it
+    // Ensures skipping useless scans over ocean in between ground
+    @Test
+    void testEchoingForwardStateNormal(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     Information info = new Information(15, job);
+        JSONObject job = new JSONObject();
+        job.put("found","GROUND");
+        job.put("range",5);
 
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("stop",dec.getAction());
+        Information info = new Information(15, job);
 
-    //     //Testing for if in range
-    //     job = new JSONObject();
-    //     job.put("found","");
-    //     info = new Information(15, job);
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("fly",dec.getAction());
+    }
 
-    //     pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     dec = gs.performSearch();
-    //     assertEquals("fly",dec.getAction());
+    // Edge case for FirstTurn state
+    @Test
+    void testFirstTurn(){
+        gs.setStatePublic(gs.newFirstTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("scan",dec.getAction());
+    }
+
+    // Edge case for SecondTurn state
+    @Test
+    void testSecondTurn(){
+        gs.setStatePublic(gs.newSecondTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("heading",dec.getAction());
+        assertEquals(Compass.WEST, dec.getDir());
+    }
+
+    // Edge case for ThirdTurn state
+    @Test
+    void testThirdTurn(){
+        gs.setStatePublic(gs.newThirdTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+
+        assertEquals("heading",dec.getAction());
+        assertEquals(Compass.NORTH, dec.getDir());
+    }
+
+    // Edge case for FourthTurn state
+    @Test
+    void testFourthTurn(){
+        gs.setStatePublic(gs.newFourthTurn());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("scan",dec.getAction());
+    }
+
+    // Small simulation of the Scanning when creeks were found
+    // Checks if the creeks were added to the memory of the drone
+    @Test
+    void testScanningStateFoundCreeks(){
+        gs.setStatePublic(gs.newScanningState());
+
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
+
+        JSONArray creekArray = new JSONArray();
+        creekArray.put("examplecreek");
+
+        JSONArray siteArray = new JSONArray();
+        JSONArray biomeArray = new JSONArray();
+
+        job.put("creeks",creekArray);
+        job.put("sites",siteArray);
+        job.put("biomes",biomeArray);
+
+        Information info = new Information(15, job);
+
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        gs.performSearch();
         
-    // }
+        assertTrue(gs.creeksAmount() > 0);
+    }
 
-    // @Test
-    // void testEchoingForwardStateInRange(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
+    // Simulation of the ScanningState finding a site
+    // Checks if the site was updated during ScanningStates
+    @Test
+    void testScanningStateFoundSites(){
+        gs.setStatePublic(gs.newScanningState());
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     job.put("range",5);
-    //     Information info = new Information(15, job);
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
 
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("fly",dec.getAction());
-    // }
-    // @Test
-    // void testEchoingForwardStateOutofRange(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
+        JSONArray creekArray = new JSONArray();
+        JSONArray siteArray = new JSONArray();
+        siteArray.put("examplesite");
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     job.put("range",1);
-    //     Information info = new Information(15, job);
+        JSONArray biomeArray = new JSONArray();
 
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("heading",dec.getAction());
-    //     assertEquals(Compass.EAST,dec.getDir());
-    // }
+        job.put("creeks",creekArray);
+        job.put("sites",siteArray);
+        job.put("biomes",biomeArray);
 
-    // @Test
-    // void testEchoingForwardStateNormal(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
+        Information info = new Information(15, job);
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
+        Position pos = new Position(5, 9);
+        gs.updateInfo(info, pos);
+        gs.performSearch();
 
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("fly",dec.getAction());
-    // }
-
-    // @Test
-    // void testFirstTurn(){
-    //     gs.setStatePublic(gs.newFirstTurn());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("echo",dec.getAction());
-    //     assertEquals(Compass.NORTH, dec.getDir());
-    // }
-    // @Test
-    // void testSecondTurn(){
-    //     gs.setStatePublic(gs.newSecondTurn());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("heading",dec.getAction());
-    //     assertEquals(Compass.WEST, dec.getDir());
-    // }
-    // @Test
-    // void testThirdTurn(){
-    //     gs.setStatePublic(gs.newThirdTurn());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-
-    //     assertEquals("heading",dec.getAction());
-    //     assertEquals(Compass.NORTH, dec.getDir());
-    // }
-    // @Test
-    // void testFourthTurn(){
-    //     gs.setStatePublic(gs.newFourthTurn());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
-
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("scan",dec.getAction());
-    // }
-
-    // @Test
-    // void testScanningStateFoundCreeks(){
-    //     gs.setStatePublic(gs.newScanningState());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
-
-    //     JSONArray creekArray = new JSONArray();
-    //     creekArray.put("examplecreek");
-
-    //     JSONArray siteArray = new JSONArray();
-    //     JSONArray biomeArray = new JSONArray();
-
-    //     job.put("creeks",creekArray);
-    //     job.put("sites",siteArray);
-    //     job.put("biomes",biomeArray);
-
-    //     JSONObject expected = new JSONObject();
-    //     expected.put("action","scan");
-
-    //     Information info = new Information(15, job);
-
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     gs.performSearch();
+        POI newsite = gs.giveSite();
         
-    //     assertTrue(gs.creeksAmount() > 0);
-    // }
-    // @Test
-    // void testScanningStateFoundSites(){
-    //     gs.setStatePublic(gs.newScanningState());
+        assertEquals("examplesite",newsite.getID());
+        assertEquals(5, newsite.getXvalue());
+        assertEquals(9, newsite.getYvalue());
+    }
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
+    // Small simulation of the scanning state finding the ocean
+    // Expected to echo
+    @Test
+    void testScanningStateFoundOcean(){
+        gs.setStatePublic(gs.newScanningState());
 
-    //     JSONArray creekArray = new JSONArray();
-    //     JSONArray siteArray = new JSONArray();
-    //     siteArray.put("examplesite");
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
 
-    //     JSONArray biomeArray = new JSONArray();
+        JSONArray creekArray = new JSONArray();
+        JSONArray siteArray = new JSONArray();
+        JSONArray biomeArray = new JSONArray();
+        biomeArray.put("OCEAN");
 
-    //     job.put("creeks",creekArray);
-    //     job.put("sites",siteArray);
-    //     job.put("biomes",biomeArray);
+        job.put("creeks",creekArray);
+        job.put("sites",siteArray);
+        job.put("biomes",biomeArray);
 
-    //     Information info = new Information(15, job);
+        Information info = new Information(15, job);
 
-    //     Position pos = new Position(5, 9);
-    //     gs.updateInfo(info, pos);
-    //     gs.performSearch();
-        
-    //     assertEquals(5, gs.sitePosition().getX());
-    //     assertEquals(9, gs.sitePosition().getY());
-    // }
-    // @Test
-    // void testScanningStateFoundOcean(){
-    //     gs.setStatePublic(gs.newScanningState());
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("echo",dec.getAction());
+        assertEquals(Compass.SOUTH, dec.getDir());
+    }
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
+    // Small simulation of the scanning state finding something not ocean (ground)
+    // Expected to fly
+    @Test
+    void testScanningStateNotOcean(){
+        gs.setStatePublic(gs.newScanningState());
 
-    //     JSONArray creekArray = new JSONArray();
-    //     JSONArray siteArray = new JSONArray();
-    //     JSONArray biomeArray = new JSONArray();
-    //     biomeArray.put("OCEAN");
+        JSONObject job = new JSONObject();
+        job.put("found","");
+        job.put("range",5);
 
-    //     job.put("creeks",creekArray);
-    //     job.put("sites",siteArray);
-    //     job.put("biomes",biomeArray);
+        JSONArray creekArray = new JSONArray();
+        JSONArray siteArray = new JSONArray();
+        JSONArray biomeArray = new JSONArray();
+        biomeArray.put("NOT OCEAN");
 
-    //     JSONObject expected = new JSONObject();
-    //     expected.put("action","echo");
-    //     expected.put("parameters", (new JSONObject()).put("direction", "E"));
+        job.put("creeks",creekArray);
+        job.put("sites",siteArray);
+        job.put("biomes",biomeArray);
 
-    //     Information info = new Information(15, job);
+        Information info = new Information(15, job);
 
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("echo",dec.getAction());
-    //     assertEquals(Compass.SOUTH, dec.getDir());
-    // }
-    // @Test
-    // void testScanningStateNotOcean(){
-    //     gs.setStatePublic(gs.newScanningState());
+        Position pos = new Position(0, 0);
+        gs.updateInfo(info, pos);
+        Decision dec = gs.performSearch();
+        assertEquals("fly",dec.getAction());
+    }
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","");
-    //     job.put("range",5);
+    // Checks if FlyWideTurn will fly if the edge of the map is far
+    @Test
+    void testFlyWideTurnBigRange(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     JSONArray creekArray = new JSONArray();
-    //     JSONArray siteArray = new JSONArray();
-    //     JSONArray biomeArray = new JSONArray();
-    //     biomeArray.put("NOT OCEAN");
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",100);
 
-    //     job.put("creeks",creekArray);
-    //     job.put("sites",siteArray);
-    //     job.put("biomes",biomeArray);
+        Information info = new Information(15, job);
+        Position pos = new Position(0, 0);
 
-    //     Information info = new Information(15, job);
+        //Simulate echoing forward out of range to set range in GridSearcher.java
+        gs.updateInfo(info, pos);
+        gs.performSearch();
 
-    //     Position pos = new Position(0, 0);
-    //     gs.updateInfo(info, pos);
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("fly",dec.getAction());
-    // }
+        gs.setStatePublic(gs.newFlyWideTurn());
+        Decision dec = gs.performSearch();
+        assertEquals("fly",dec.getAction());
+    }
 
-    // @Test
-    // void testFlyWideTurnBigRange(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
+    // Checks if FlyWideTurn will turn if the edge of the map is in medium range 
+    @Test
+    void testFlyWideTurnMediumRange(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     job.put("range",100);
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",3);
 
-    //     Information info = new Information(15, job);
-    //     Position pos = new Position(0, 0);
+        Information info = new Information(15, job);
+        Position pos = new Position(0, 0);
 
-    //     //Simulate echoing forward out of range to set range in GridSearcher.java
-    //     gs.updateInfo(info, pos);
-    //     gs.performSearch();
+        //Simulate echoing forward out of range to set range in GridSearcher.java
+        gs.updateInfo(info, pos);
+        gs.performSearch();
 
         
-    //     gs.setStatePublic(gs.newFlyWideTurn());
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("fly",dec.getAction());
-    // }
-    // @Test
-    // void testFlyWideTurnMediumRange(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setStatePublic(gs.newFlyWideTurn());
+        Decision dec = gs.performSearch();
+        assertEquals("heading",dec.getAction());
+    }
 
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     job.put("range",3);
+    @Test
+    void testFlyWideTurnSmallRange(){
+        gs.setStatePublic(gs.newEchoingForwardState());
 
-    //     Information info = new Information(15, job);
-    //     Position pos = new Position(0, 0);
+        JSONObject job = new JSONObject();
+        job.put("found","OUT_OF_RANGE");
+        job.put("range",0);
 
-    //     //Simulate echoing forward out of range to set range in GridSearcher.java
-    //     gs.updateInfo(info, pos);
-    //     gs.performSearch();
+        Information info = new Information(15, job);
+        Position pos = new Position(0, 0);
 
+        //Simulate echoing forward out of range to set range in GridSearcher.java
+        gs.updateInfo(info, pos);
+        gs.performSearch();
         
-    //     gs.setStatePublic(gs.newFlyWideTurn());
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("heading",dec.getAction());
-    // }
-    // @Test
-    // void testFlyWideTurnSmallRange(){
-    //     gs.setStatePublic(gs.newEchoingForwardState());
-
-    //     JSONObject job = new JSONObject();
-    //     job.put("found","OUT_OF_RANGE");
-    //     job.put("range",0);
-
-    //     Information info = new Information(15, job);
-    //     Position pos = new Position(0, 0);
-
-    //     //Simulate echoing forward out of range to set range in GridSearcher.java
-    //     gs.updateInfo(info, pos);
-    //     gs.performSearch();
-        
-    //     gs.setStatePublic(gs.newFlyWideTurn());
-    //     Decision dec = gs.performSearch();
-    //     assertEquals("heading",dec.getAction());
-    // }
+        gs.setStatePublic(gs.newFlyWideTurn());
+        Decision dec = gs.performSearch();
+        assertEquals("heading",dec.getAction());
+    }
 }

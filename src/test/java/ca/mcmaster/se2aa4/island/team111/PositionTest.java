@@ -13,14 +13,17 @@ class PositionTest {
     void init(){
         pos = new Position(0, 0);
     }
+
+    // Check if forward changes the XY coordinates correctly
     @Test
-    void Foward() {
+    void ForwardTest() {
         assertEquals(1, pos.changePosition(Compass.NORTH).getY());
         assertEquals(-1, pos.changePosition(Compass.WEST).getX());
         assertEquals(-1, pos.changePosition(Compass.SOUTH).getY());
         assertEquals(1, pos.changePosition(Compass.EAST).getX());
     }
 
+    // Same for the left/right turns of each Compass direction
     @Test
     void TurnLeftN() {
         Compass c = Compass.NORTH;

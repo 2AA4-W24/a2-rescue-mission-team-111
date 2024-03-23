@@ -11,50 +11,51 @@ import org.json.JSONObject;
 
 class DroneTest {
 
-    //If drone starts with no battery
+    // Drone should stop if it has low battery
     @Test
     void decisionLowBatteryTest() {
         Drone dr = new Drone(1,"E");
         assertEquals("stop",dr.giveDecision().getAction());
     }
 
-    // @Test
-    // void findingToArriving(){
-    //     Drone dr = new Drone(5000,"E");
-    //     JSONObject job = new JSONObject();
-    //     job.put("extras","");
-    //     job.put("found","GROUND");
-    //     Information info = new Information(15, job);
+    // Check if the drone will switch to "ARRIVING" state when ground is found
+    @Test
+    void findingToArriving(){
+        Drone dr = new Drone(5000,"E");
+        JSONObject job = new JSONObject();
+        job.put("extras","");
+        job.put("range",0);
+        job.put("found","GROUND");
+        Information info = new Information(15, job);
 
-    //     dr.receiveInfo(info);
-    //     dr.giveDecision();
-    //     dr.giveDecision();
+        dr.receiveInfo(info);
+        dr.giveDecision();
+        dr.giveDecision();
 
-    //     assertEquals(DroneState.ARRIVING, dr.getCurrentState());
-    // }
+        assertEquals(DroneState.ARRIVING, dr.getCurrentState());
+    }
 
-    // @Test
-    // void arrivingToSearching(){
-    //     Drone dr = new Drone(5000,"E");
-    //     JSONObject job = new JSONObject();
-    //     job.put("extras","");
-    //     job.put("found","GROUND");
-    //     Information info = new Information(15, job);
+    // Check if the drone will switch to "SEARCHING" when ground is reached
+    @Test
+    void arrivingToSearching(){
+        Drone dr = new Drone(5000,"E");
+        JSONObject job = new JSONObject();
+        job.put("extras","");
+        job.put("range", -1);
+        job.put("found","GROUND");
+        Information info = new Information(15, job);
 
-    //     // Exhaust all the initial "arriving" commands (8 times)
-    //     dr.receiveInfo(info);
-    //     dr.giveDecision();
-    //     dr.giveDecision();
-    //     dr.giveDecision();
-    //     dr.giveDecision();
-    //     dr.giveDecision(); 
-    //     dr.giveDecision();
-    //     dr.giveDecision();
-    //     dr.giveDecision();
-        
-    //     assertEquals(DroneState.SEARCHING, dr.getCurrentState());
-    // }
+        dr.receiveInfo(info);
 
+        // Exhaust all the commands in the queue (8 times)
+        for(int i = 0;i < 8;i++){
+            dr.giveDecision();
+        }
+
+        assertEquals(DroneState.SEARCHING, dr.getCurrentState());
+    }
+
+    // Test if drone info matches input info
     @Test
     void recieveinfoTest(){
         Drone dr = new Drone(100, "E");

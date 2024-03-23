@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 class InformationTest {
 
+    // Check if Information returns the correct extras in the JSON object
     @Test
     void extrasTest() {
         JSONObject job = new JSONObject();
@@ -17,6 +18,7 @@ class InformationTest {
         assertEquals(job,info.getExtra());
     }
 
+    // Check if Information returns the correct input cost
     @Test
     void costTest(){
         Information info = new Information(5, null);
