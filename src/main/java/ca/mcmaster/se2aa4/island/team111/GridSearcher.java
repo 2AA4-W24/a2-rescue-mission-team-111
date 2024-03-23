@@ -117,13 +117,27 @@ public class GridSearcher implements Searchable {
         @Override
         public Decision handle(GridSearcher searcher) {
             Decision decision;
+            searcher.setState(new ScanningInTurn());
+            decision = new Decision("scan");
+            return decision;
+            
+        } 
+    }
+
+    private class ScanningInTurn implements GridSearchState {
+        @Override
+        public Decision handle(GridSearcher searcher) {
+            Decision decision;
+            Information I = currentInfo;
+            addCreek(I);
+            addSite(I);
             searcher.setState(new CheckingDone());
             Compass dir_before_turn = searcher.dirBeforeTurn;
             Compass echoingDir = dir_before_turn.opposite();
             decision = new Decision("echo", echoingDir);
             return decision;
-            
-        } 
+        }
+
     }
 
     private class FlyingSearcher implements GridSearchState {
@@ -174,7 +188,7 @@ public class GridSearcher implements Searchable {
         @Override
         public Decision handle(GridSearcher searcher) {
             Decision decision;
-            searcher.setState(new FlyingSearcher());
+            searcher.setState(new ScanningState());
             dirBeforeTurn = dirBeforeTurn.opposite();
             decision = new Decision("scan");
             return decision;
@@ -189,20 +203,8 @@ public class GridSearcher implements Searchable {
             JSONObject extras = I.getExtra();
             Decision decision;
 
-            JSONArray c = extras.getJSONArray("creeks");
-            if (!c.isEmpty()) {
-                for (int i = 0; i<c.length(); i++) {
-                    POI newPOI = new POI(c.getString(i), currentPos);
-                    creeks.add(newPOI);
-                }
-            }
-
-            JSONArray s = extras.getJSONArray("sites");
-            if (!s.isEmpty()) {
-                for (int i = 0; i<s.length(); i++) {
-                    site = new POI(s.getString(i), currentPos);
-                }
-            }
+            addCreek(I);
+            addSite(I);
             
             JSONArray biomes = extras.getJSONArray("biomes");
             for (int i = 0; i<biomes.length(); i++) {
@@ -242,6 +244,27 @@ public class GridSearcher implements Searchable {
             decision = new Decision("heading", turningDir);
             return decision;
         } 
+    }
+
+    private void addCreek(Information info) {
+        JSONObject extras = info.getExtra();
+        JSONArray c = extras.getJSONArray("creeks");
+        if (!c.isEmpty()) {
+            for (int i = 0; i<c.length(); i++) {
+                POI newPOI = new POI(c.getString(i), currentPos);
+                creeks.add(newPOI);
+            }
+        }
+    }
+
+    private void addSite(Information info) {
+        JSONObject extras = info.getExtra();
+        JSONArray s = extras.getJSONArray("sites");
+        if (!s.isEmpty()) {
+            for (int i = 0; i<s.length(); i++) {
+                site = new POI(s.getString(i), currentPos);
+            }
+        }
     }
 
 }
