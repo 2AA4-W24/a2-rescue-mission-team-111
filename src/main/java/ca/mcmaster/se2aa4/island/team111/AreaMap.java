@@ -3,7 +3,7 @@ package ca.mcmaster.se2aa4.island.team111;
 import java.util.*;
 
 public class AreaMap {
-    private Map<List<String>, Position> biomes;
+    private Map<List<String>, Position> biomes = new HashMap<>();
     private List<POI> creeks;
     private POI site;
     
@@ -11,6 +11,10 @@ public class AreaMap {
         this.biomes = biomeMap;
         this.creeks = creekList;
         this.site = emergencySite;
+    }
+
+    public Map<List<String>, Position> getBiomes() {
+        return biomes;
     }
 
     public String calculateClosest() {
