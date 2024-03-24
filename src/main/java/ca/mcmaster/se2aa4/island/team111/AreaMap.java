@@ -2,11 +2,11 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import java.util.List;
 
-public class Calculator {
+public class AreaMap {
     private List<POI> creeks;
     private POI site;
     
-    public Calculator(List<POI> creekList, POI emergencySite) {
+    public AreaMap(List<POI> creekList, POI emergencySite) {
         this.creeks = creekList;
         this.site = emergencySite;
     }

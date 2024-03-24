@@ -49,8 +49,8 @@ public class GridSearcher implements CreekSearchable {
     }
 
     public String giveClosestCreek() {
-        Calculator calculator = new Calculator(creeks, site);
-        return calculator.calculateClosest();
+        AreaMap areaMap = new AreaMap(creeks, site);
+        return areaMap.calculateClosest();
     }
 
     private interface GridSearchState {
