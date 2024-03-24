@@ -15,7 +15,7 @@ public class DecisionTranslator implements Translator {
     @Override
     public void translate() {
         JSONObject decision = new JSONObject();
-        if (finalDecision.getDir() == null) {
+        if (finalDecision.getDir() == Compass.NONE) {
             decision.put(magicWord, finalDecision.getAction());
         } else {
             decision.put(magicWord, finalDecision.getAction());
