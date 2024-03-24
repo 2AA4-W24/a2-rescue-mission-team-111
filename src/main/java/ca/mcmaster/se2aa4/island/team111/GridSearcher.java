@@ -11,6 +11,7 @@ public class GridSearcher implements CreekSearchable {
     private Information currentInfo;
     private Position currentPos;
 
+    private Map<List<String>, Position> allBiomes = new HashMap<>();
     private List<POI> creeks = new ArrayList<>();
     private POI site = new POI("NULL", new Position(0, 0));
 
@@ -49,7 +50,7 @@ public class GridSearcher implements CreekSearchable {
     }
 
     public String giveClosestCreek() {
-        AreaMap areaMap = new AreaMap(creeks, site);
+        AreaMap areaMap = new AreaMap(allBiomes, creeks, site);
         return areaMap.calculateClosest();
     }
 
@@ -133,8 +134,19 @@ public class GridSearcher implements CreekSearchable {
         public Decision handle(GridSearcher searcher) {
             Decision decision;
             Information I = currentInfo;
+            JSONObject extras = I.getExtra();
+
             addCreek(I);
             addSite(I);
+
+            
+            JSONArray biomes = extras.getJSONArray("biomes");
+            List<String> biomeList = new ArrayList<>();
+            for (int i = 0; i<biomes.length(); i++) {
+                biomeList.add(biomes.getString(i));
+            }
+            allBiomes.put(biomeList, currentPos);
+
             searcher.setState(new CheckingDone());
             Compass dirBeforeTurn = searcher.dirBeforeTurn;
             Compass echoingDir = dirBeforeTurn.opposite();
@@ -211,6 +223,12 @@ public class GridSearcher implements CreekSearchable {
             addSite(I);
             
             JSONArray biomes = extras.getJSONArray("biomes");
+            List<String> biomeList = new ArrayList<>();
+            for (int i = 0; i<biomes.length(); i++) {
+                biomeList.add(biomes.getString(i));
+            }
+            allBiomes.put(biomeList, currentPos);
+
             for (int i = 0; i<biomes.length(); i++) {
                 if (!(biomes.get(i).equals("OCEAN"))) {
                     searcher.setState(new FlyingSearcher());
