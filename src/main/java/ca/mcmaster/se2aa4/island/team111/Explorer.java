@@ -11,7 +11,6 @@ import org.json.JSONTokener;
 public class Explorer implements IExplorerRaid {
 
     private final Logger logger = LogManager.getLogger();
-
     private Drone drone;
 
     @Override

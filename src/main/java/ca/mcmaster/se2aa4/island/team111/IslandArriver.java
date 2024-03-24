@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.json.JSONObject;
 
-public class IslandArriver implements Findable, Arrivable {
+public class IslandArriver implements Finder, Arriver {
 
     private ArriverState currentState = new FlyingArriver();
     private Information currentInfo;

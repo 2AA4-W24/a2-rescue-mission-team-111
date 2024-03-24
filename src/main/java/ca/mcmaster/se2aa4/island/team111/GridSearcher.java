@@ -5,7 +5,7 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class GridSearcher implements CreekSearchable {
+public class GridSearcher implements CreekSearcher {
 
     private GridSearchState currentState = new FlyingSearcher();
     private Information currentInfo;
@@ -48,6 +48,7 @@ public class GridSearcher implements CreekSearchable {
         return currentState.handle(this);
     }
 
+    @Override
     public String giveClosestCreek() {
         AreaMap areaMap = new AreaMap(allBiomes, creeks, site);
         return areaMap.calculateClosest();
