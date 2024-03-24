@@ -2,7 +2,7 @@ package ca.mcmaster.se2aa4.island.team111;
 
 public class Decision {
     private String action;
-    private Compass direction = Compass.NORTH;
+    private Compass direction = Compass.NONE;
 
     public Decision(String theAction) {
         this.action = theAction;
