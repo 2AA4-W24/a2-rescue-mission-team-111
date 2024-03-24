@@ -1,0 +1,96 @@
+@startuml Sequence Diagram
+
+title "Sequence Diagram"
+
+participant Engine
+participant Explorer
+
+Engine -> Explorer : initialize()
+create Drone
+Explorer -> Drone : new Drone(batterylevel, direction)
+create Battery
+Drone -> Battery : new Battery(charge)
+create Position
+Drone -> Position : new
+create IslandArriver
+Drone -> IslandArriver : new
+Explorer <- Drone
+Engine <- Explorer
+
+
+
+Engine -> Explorer : acknowledgeResults()
+Explorer -> Drone ++ : recieveInfo()
+Drone -> Drone : update info
+Drone -> Battery : depleteCharge()
+Explorer <- Drone --
+Engine <- Explorer
+
+Engine -> Explorer : takeDecision()
+Explorer -> Drone : giveDecision()
+Drone -> Battery ++: isLow()
+Drone <- Battery --: isLow()
+
+opt : [isLow == true]
+    Explorer <- Drone : decision "stop"
+    Engine <- Explorer : JSON decision "stop"
+end
+
+alt currentState == FINDING
+    Drone -> IslandArriver ++: updateInfo() and find()
+    Drone <- IslandArriver --: return decision
+    opt decision is "fly"
+        Drone -> Position : changePosition(direction)
+    end
+    opt findingIsDone == true
+        Drone -> Drone : go to next state (ARRIVING)
+    end
+    Explorer <- Drone : return decision
+    Engine <- Explorer : JSON decision
+else currentState == ARRIVING
+    Drone -> IslandArriver ++ : updateInfo() and moveTo()
+    Drone <- IslandArriver -- : return decision
+    alt decision is "fly"
+        Drone -> Position : changePosition(direction)
+    else decision is "heading"
+        Drone -> Position : changePosition(old_dir, direction)
+    end
+    opt arrivingIsDone
+        Drone -> Drone : go to next state (SEARCHING)
+        create GridSearcher
+        Drone -> GridSearcher : instantiate
+    end
+    Explorer <- Drone : return decision
+    Engine <- Explorer : JSON decision
+else currentState == SEARCHING
+    Drone -> GridSearcher ++: updateInfo() and performSearch()
+    GridSearcher -> GridSearcher : handle() on internal states
+    Drone <- GridSearcher -- : return decision
+    alt decision is "fly"
+        Drone -> Position : changePosition(direction)
+    else decision is "heading"
+        Drone -> Position : changePosition(old_dir, direction)
+    end
+    Explorer <- Drone : return decision
+    Engine <- Explorer : JSON decision
+end
+
+Engine -> Explorer : deliverFinalReport()
+Explorer -> Drone : giveClosest()
+Drone -> GridSearcher : giveClosestCreek()
+create AreaMap
+GridSearcher -> AreaMap ++ : calculateClosest(creeks, site)
+
+alt creeks were found
+    GridSearcher <- AreaMap : closest creek id
+    Drone <- GridSearcher : closest creek id
+    Explorer <- Drone : closest creek id
+    Engine <- Explorer : closest creek id
+else no creeks were found
+    GridSearcher <- AreaMap --: "No creeks were found"
+    Drone <- GridSearcher : "No creeks were found"
+    Explorer <- Drone : "No creeks were found"
+    Engine <- Explorer : "No creeks were found"
+end
+
+@enduml
