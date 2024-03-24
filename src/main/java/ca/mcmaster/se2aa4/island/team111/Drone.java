@@ -1,12 +1,8 @@
 package ca.mcmaster.se2aa4.island.team111;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 public class Drone {
-
-    private final Logger logger = LogManager.getLogger();
 
     private Battery battery;
     private Position pos = new Position(0, 0);
@@ -27,25 +23,20 @@ public class Drone {
         this.islandArriver = new IslandArriver(direc);
     }
 
-    // Getter for current info
     public Information getInfo(){
         return currentInfo;
     }
 
-    //Receive info from acknowledge results here
     public void receiveInfo(Information I) {
         currentInfo = I;
         battery.depleteCharge(I.getCost());
     }
 
-    //Getter for current state
     public DroneState getCurrentState(){
         return this.currentState;
     }
 
-
     public Decision giveDecision() {
-        logger.info("Battery: " + battery.getCharge());
         Decision decision;
         //If battery is low, stop
         if (battery.isLow(pos)) {
@@ -71,9 +62,9 @@ public class Drone {
                 if (instruction2.equals("fly")) {
                     pos = pos.changePosition(direction);
                 } else if (instruction2.equals("heading")) {
-                    Compass old_dir = direction;
+                    Compass oldDir = direction;
                     direction = decision.getDir();
-                    pos = pos.changePosition(old_dir, direction);
+                    pos = pos.changePosition(oldDir, direction);
                 }
                 if (islandArriver.arrivingIsDone()) {
                     this.gridSearcher = new GridSearcher(initialDir, direction);
@@ -85,9 +76,9 @@ public class Drone {
                 decision = gridSearcher.performSearch();
                 String instruction3 = decision.getAction();
                 if (instruction3.equals("heading")) {
-                    Compass old_dir = direction;
+                    Compass oldDir = direction;
                     direction = decision.getDir();
-                    pos = pos.changePosition(old_dir, direction);
+                    pos = pos.changePosition(oldDir, direction);
                 } else if (instruction3.equals("fly")) {
                     pos = pos.changePosition(direction);
                 }

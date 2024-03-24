@@ -30,7 +30,6 @@ public class GridSearcher implements CreekSearchable {
         return this.site;
     }
 
-    // Public getter for testing
     public int creeksAmount(){
         return this.creeks.size();
     }
@@ -148,8 +147,8 @@ public class GridSearcher implements CreekSearchable {
             allBiomes.put(biomeList, currentPos);
 
             searcher.setState(new CheckingDone());
-            Compass dirBeforeTurn = searcher.dirBeforeTurn;
-            Compass echoingDir = dirBeforeTurn.opposite();
+            Compass dirBeforeTheTurn = searcher.dirBeforeTurn;
+            Compass echoingDir = dirBeforeTheTurn.opposite();
             decision = new Decision("echo", echoingDir);
             return decision;
         }
