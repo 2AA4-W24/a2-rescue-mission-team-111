@@ -3,9 +3,6 @@ package ca.mcmaster.se2aa4.island.team111;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +20,7 @@ class GridSearcherTest {
     // Tests if drone will stop if it gets OUT_OF_RANGE during CheckingDone state
     @Test
     void testCheckingDoneOutOfRange() {
-        gs.setStatePublic(gs.newCheckingDone());
+        gs.setState(gs.newCheckingDone());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -39,7 +36,7 @@ class GridSearcherTest {
     // Tests if drone will continue flying during CheckingDrone state
     @Test
     void testCheckingDoneInRange(){
-        gs.setStatePublic(gs.newCheckingDone());
+        gs.setState(gs.newCheckingDone());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -54,7 +51,7 @@ class GridSearcherTest {
     // Tests if the EchoingForward state will continue flying in long range
     @Test
     void testEchoingForwardStateSafeRange(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -70,7 +67,7 @@ class GridSearcherTest {
     // Tests if the EchoingForward state will change it's heading if flying in short range
     @Test
     void testEchoingForwardStateOutofRange(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -88,7 +85,7 @@ class GridSearcherTest {
     // Ensures skipping useless scans over ocean in between ground
     @Test
     void testEchoingForwardStateNormal(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","GROUND");
@@ -105,7 +102,7 @@ class GridSearcherTest {
     // Edge case for FirstTurn state
     @Test
     void testFirstTurn(){
-        gs.setStatePublic(gs.newFirstTurn());
+        gs.setState(gs.newFirstTurn());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -121,7 +118,7 @@ class GridSearcherTest {
     // Edge case for SecondTurn state
     @Test
     void testSecondTurn(){
-        gs.setStatePublic(gs.newSecondTurn());
+        gs.setState(gs.newSecondTurn());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -138,7 +135,7 @@ class GridSearcherTest {
     // Edge case for ThirdTurn state
     @Test
     void testThirdTurn(){
-        gs.setStatePublic(gs.newThirdTurn());
+        gs.setState(gs.newThirdTurn());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -156,7 +153,7 @@ class GridSearcherTest {
     // Edge case for FourthTurn state
     @Test
     void testFourthTurn(){
-        gs.setStatePublic(gs.newFourthTurn());
+        gs.setState(gs.newFourthTurn());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -174,7 +171,7 @@ class GridSearcherTest {
     // Checks if the creeks were added to the memory of the drone
     @Test
     void testScanningStateFoundCreeks(){
-        gs.setStatePublic(gs.newScanningState());
+        gs.setState(gs.newScanningState());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -203,7 +200,7 @@ class GridSearcherTest {
     // Checks if the site was updated during ScanningStates
     @Test
     void testScanningStateFoundSites(){
-        gs.setStatePublic(gs.newScanningState());
+        gs.setState(gs.newScanningState());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -236,7 +233,7 @@ class GridSearcherTest {
     // Expected to echo
     @Test
     void testScanningStateFoundOcean(){
-        gs.setStatePublic(gs.newScanningState());
+        gs.setState(gs.newScanningState());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -264,7 +261,7 @@ class GridSearcherTest {
     // Expected to fly
     @Test
     void testScanningStateNotOcean(){
-        gs.setStatePublic(gs.newScanningState());
+        gs.setState(gs.newScanningState());
 
         JSONObject job = new JSONObject();
         job.put("found","");
@@ -290,7 +287,7 @@ class GridSearcherTest {
     // Checks if FlyWideTurn will fly if the edge of the map is far
     @Test
     void testFlyWideTurnBigRange(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -303,7 +300,7 @@ class GridSearcherTest {
         gs.updateInfo(info, pos);
         gs.performSearch();
 
-        gs.setStatePublic(gs.newFlyWideTurn());
+        gs.setState(gs.newFlyWideTurn());
         Decision dec = gs.performSearch();
         assertEquals("fly",dec.getAction());
     }
@@ -311,7 +308,7 @@ class GridSearcherTest {
     // Checks if FlyWideTurn will turn if the edge of the map is in medium range 
     @Test
     void testFlyWideTurnMediumRange(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -325,14 +322,14 @@ class GridSearcherTest {
         gs.performSearch();
 
         
-        gs.setStatePublic(gs.newFlyWideTurn());
+        gs.setState(gs.newFlyWideTurn());
         Decision dec = gs.performSearch();
         assertEquals("heading",dec.getAction());
     }
 
     @Test
     void testFlyWideTurnSmallRange(){
-        gs.setStatePublic(gs.newEchoingForwardState());
+        gs.setState(gs.newEchoingForwardState());
 
         JSONObject job = new JSONObject();
         job.put("found","OUT_OF_RANGE");
@@ -345,7 +342,7 @@ class GridSearcherTest {
         gs.updateInfo(info, pos);
         gs.performSearch();
         
-        gs.setStatePublic(gs.newFlyWideTurn());
+        gs.setState(gs.newFlyWideTurn());
         Decision dec = gs.performSearch();
         assertEquals("heading",dec.getAction());
     }

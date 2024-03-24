@@ -14,7 +14,7 @@ public class Drone {
     private Compass direction;
     private DroneState currentState = DroneState.FINDING;
     private IslandArriver islandArriver;
-    private GridSearcher gridSearcher;
+    private CreekSearchable gridSearcher;
     private Information currentInfo = new Information(0, new JSONObject());
      
 

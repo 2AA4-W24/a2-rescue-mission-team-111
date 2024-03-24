@@ -3,10 +3,7 @@ package ca.mcmaster.se2aa4.island.team111;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.StringReader;
-
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 
 class DecisionTranslatorTest {

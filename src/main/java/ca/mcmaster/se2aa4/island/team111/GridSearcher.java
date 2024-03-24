@@ -5,13 +5,13 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class GridSearcher implements Searchable {
+public class GridSearcher implements CreekSearchable {
 
     private GridSearchState currentState = new FlyingSearcher();
     private Information currentInfo;
     private Position currentPos;
 
-    private List<POI> creeks = new ArrayList<POI>();
+    private List<POI> creeks = new ArrayList<>();
     private POI site = new POI("NULL", new Position(0, 0));
 
     private Compass initialDir;
@@ -25,12 +25,6 @@ public class GridSearcher implements Searchable {
         this.dirBeforeTurn = currentDir;
     }
 
-    // Public setter for testing
-    public void setStatePublic(GridSearchState gState){
-        this.setState(gState);
-    }
-
-    // Public getter for testing
     public POI giveSite(){
         return this.site;
     }
@@ -40,7 +34,7 @@ public class GridSearcher implements Searchable {
         return this.creeks.size();
     }
 
-    private void setState(GridSearchState gState) {
+    public void setState(GridSearchState gState) {
         currentState = gState;
     }
 
@@ -142,8 +136,8 @@ public class GridSearcher implements Searchable {
             addCreek(I);
             addSite(I);
             searcher.setState(new CheckingDone());
-            Compass dir_before_turn = searcher.dirBeforeTurn;
-            Compass echoingDir = dir_before_turn.opposite();
+            Compass dirBeforeTurn = searcher.dirBeforeTurn;
+            Compass echoingDir = dirBeforeTurn.opposite();
             decision = new Decision("echo", echoingDir);
             return decision;
         }

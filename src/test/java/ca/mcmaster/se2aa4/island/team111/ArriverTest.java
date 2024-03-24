@@ -2,8 +2,6 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import org.junit.jupiter.api.Test;
 
-import ca.mcmaster.se2aa4.island.team111.IslandArriver.*;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.json.JSONObject;
