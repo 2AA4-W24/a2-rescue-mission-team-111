@@ -1,0 +1,181 @@
+@startuml High-Level Class Diagram
+    class Explorer {
+        -drone: Drone 
+        +^initialize(String s)
+        +^takeDecision()
+        +^acknowledgeResults(String s)
+        +^deliverFinalReport()
+    }
+
+    interface Translator {
+        +void translate()
+    }
+
+    Explorer --> DecisionTranslator
+    Explorer --> ResponseTranslator
+    Translator <|.. ResponseTranslator
+    Translator <|.. DecisionTranslator
+    
+    class ResponseTranslator {
+        +^translate()
+    }
+
+    class DecisionTranslator {
+        -finalDecision: Decision 
+        +^translate()
+    }
+
+    DecisionTranslator "*" o-- "1" Decision
+
+    class Decision {
+        -action
+        -direction: Compass 
+        +getAction()
+        +getDir()
+    }
+
+    ResponseTranslator "*" o-- "1" Information
+    
+    class Information {
+        -cost
+        -extras
+        +getCost()
+        +getExtra()
+    }
+
+    Explorer "1" *-- Drone
+    
+    class Drone {
+        -battery: Battery
+        -pos: Position
+        -currentState: DroneState
+        -islandArriver: IslandArriver
+        -gridSearcher: CreekSearcher
+        +receiveInfo(info: Information)
+        +giveDecision(): Decision
+    }
+    Drone "1" *-- Battery
+
+    class Battery {
+        -charge
+        +depleteCharge(cost)
+        +isLow(pos)
+    }
+
+    Drone "1" o-- Position
+
+    class Position {
+        -x: int
+        -y: int
+        +getX()
+        +getY()
+        +changePosition()
+    }
+
+    Drone "1" *-- DroneState
+
+    enum DroneState {
+        FINDING
+        ARRIVING
+        SEARCHING
+        +nextState()
+    }
+
+    Drone "1" *-- IslandArriver
+    Drone "1" *-- CreekSearcher
+    GridSearcher ..|> CreekSearcher
+    
+    interface CreekSearcher {
+        +updateInfo()
+        +giveClosestCreek(): String
+    }
+
+    Searcher <|-- CreekSearcher
+
+    interface Searcher {
+        +performSearch(): Decision
+    }
+
+    class GridSearcher {
+        -currentState: GridSearchState
+        -allBiomes
+        -creeks
+        -site
+        +setState(): GridSearchState
+        +^updateInfo()
+        +^performSearch()
+        +^giveClosestCreek()
+    }
+
+    GridSearcher +-- GridSearchState
+
+
+    interface GridSearchState {
+        +handle(): Decision
+    }
+
+    interface Finder {
+        +find(): Decision
+        +findingIsDone(): boolean
+    }
+
+    interface Arriver {
+        +moveTo(): Decision
+        +arrivingIsDone(): boolean
+    }
+
+    Finder <|.. IslandArriver
+    Arriver <|.. IslandArriver
+
+    class IslandArriver {
+        -currentState: ArriverState
+        +setState()
+        +updateInfo()
+        +^find()
+        +^moveTo()
+        +^findingIsDone()
+        +^arrivingIsDone()
+    }
+
+    IslandArriver +-- ArriverState
+    
+    interface ArriverState {
+        +handle(): Decision
+    }
+
+    enum Compass {
+        NONE 
+        NORTH
+        WEST
+        EAST 
+        SOUTH 
+        +right()
+        +left()
+        +opposite()
+        +CtoS(): String
+        +StoC(): Compass
+    }
+
+    class POI {
+        -ID: String
+        +getID()
+    }
+
+    class AreaMap {
+        -biomes 
+        -creeks
+        -site
+        +calculateClosest()
+    }
+
+    GridSearcher "1" *-- "*" POI
+    GridSearcher "*" o-- AreaMap 
+    Drone --> Compass
+    IslandArriver --> Compass
+    GridSearcher --> Compass
+    GridSearcher --> Decision
+    IslandArriver --> Decision
+    Drone --> Information
+    Battery ..> Position
+
+@enduml
