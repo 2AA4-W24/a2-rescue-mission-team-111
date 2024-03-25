@@ -30,12 +30,13 @@ public class GridSearcher implements CreekSearcher {
         this.dirBeforeTurn = currentDir;
     }
 
+    //Some public getters for unit testing
     public POI giveSite(){
-        return this.site;
+        return site;
     }
 
     public int creeksAmount(){
-        return this.creeks.size();
+        return creeks.size();
     }
 
     public void setState(GridSearchState gState) {
