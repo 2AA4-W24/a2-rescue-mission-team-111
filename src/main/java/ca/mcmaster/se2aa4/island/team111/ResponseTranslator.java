@@ -2,6 +2,7 @@ package ca.mcmaster.se2aa4.island.team111;
 
 import org.json.JSONObject;
 
+//This class converts JSONObject to Information object for encapsulation and maintanability
 public class ResponseTranslator implements Translator {
 
     private Information info;
