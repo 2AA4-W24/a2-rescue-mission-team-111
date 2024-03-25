@@ -13,7 +13,7 @@ public class GridSearcher implements CreekSearcher {
 
     private Map<Position, List<String>> allBiomes = new HashMap<>();
     private List<POI> creeks = new ArrayList<>();
-    private POI site = new POI("NULL", new Position(0, 0));
+    private POI site = new POI("NULL", new Position(0, 0)); //Position of site is initially hard-coded before being assigned
 
     private Compass initialDir;
     private Compass dirBeforeTurn;
@@ -54,24 +54,13 @@ public class GridSearcher implements CreekSearcher {
         return areaMap.calculateClosestCreek();
     }
 
+    //Beginning of internal state pattern
     private interface GridSearchState {
         public Decision handle(GridSearcher searcher);
     }
-
-    // Public access to gstates
-    public GridSearchState newCheckingDone(){return new CheckingDone();}
-    public GridSearchState newEchoingForwardState(){return new EchoingForwardState();}
-    public GridSearchState newFlyingState(){return new FlyingSearcher();}
-    public GridSearchState newFlyWideTurn(){return new FlyWideTurn();}
-    public GridSearchState newScanningState(){return new ScanningState();}
-    public GridSearchState newFirstTurn(){return new FirstTurn();}
-    public GridSearchState newSecondTurn(){return new SecondTurn();}
-    public GridSearchState newThirdTurn(){return new ThirdTurn();}
-    public GridSearchState newFourthTurn(){return new FourthTurn();}
-
-
-    private class CheckingDone implements GridSearchState {
-
+ 
+    //This state checks if we are done grid-searching by echoing and checking for out of range during the turn
+    private class CheckingDone implements GridSearchState { 
         @Override
         public Decision handle(GridSearcher searcher) {
             Information I = searcher.currentInfo;
@@ -88,6 +77,9 @@ public class GridSearcher implements CreekSearcher {
         }
     }
 
+    //This state checks how far away we are from out of range or ground. If ground is far enough, we assign that range to groundRange
+    //If out of range is an acceptable distance away, we start our big turn to recenter to the next column
+    //If out of range is too close, we turn earlier 
     private class EchoingForwardState implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -118,6 +110,7 @@ public class GridSearcher implements CreekSearcher {
 
     }
 
+    //This is the first turn in our big turn
     private class FirstTurn implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -129,6 +122,7 @@ public class GridSearcher implements CreekSearcher {
         } 
     }
 
+    //We scan right after our first turn in case there is a creek there
     private class ScanningInTurn implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -156,6 +150,8 @@ public class GridSearcher implements CreekSearcher {
 
     }
 
+    //This state is the typical state of flying for the GridSearcher, where it keeps flying if groundRange is still a lot
+    //Otherwise, we scan
     private class FlyingSearcher implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -174,6 +170,7 @@ public class GridSearcher implements CreekSearcher {
 
     }
 
+    //This state is for the necessary flies in the big turn
     private class FlyWideTurn implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -199,6 +196,7 @@ public class GridSearcher implements CreekSearcher {
         } 
     }
 
+    //This state is the final turn of the big turn, before we go back to scanning the island regularly
     private class FourthTurn implements GridSearchState {
 
         @Override
@@ -211,6 +209,8 @@ public class GridSearcher implements CreekSearcher {
         } 
     }
 
+    //This state adds the associated creeks and sites(if any) as well as biomes
+    //If we scan only OCEAN, it's time to echo forward and check if we should U-turn. Otherwise, fly normally
     private class ScanningState implements GridSearchState {
 
         @Override
@@ -243,6 +243,7 @@ public class GridSearcher implements CreekSearcher {
         }
     }
 
+    //This is the second turn of our big turn, taking us to the third turn
     private class SecondTurn implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -256,6 +257,7 @@ public class GridSearcher implements CreekSearcher {
         } 
     }
 
+    //This is the third turn of our big turn, taking us to the fourth turn
     private class ThirdTurn implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
@@ -288,5 +290,16 @@ public class GridSearcher implements CreekSearcher {
             }
         }
     }
+
+       // Public access to gstates purely for testing
+       public GridSearchState newCheckingDone(){return new CheckingDone();}
+       public GridSearchState newEchoingForwardState(){return new EchoingForwardState();}
+       public GridSearchState newFlyingState(){return new FlyingSearcher();}
+       public GridSearchState newFlyWideTurn(){return new FlyWideTurn();}
+       public GridSearchState newScanningState(){return new ScanningState();}
+       public GridSearchState newFirstTurn(){return new FirstTurn();}
+       public GridSearchState newSecondTurn(){return new SecondTurn();}
+       public GridSearchState newThirdTurn(){return new ThirdTurn();}
+       public GridSearchState newFourthTurn(){return new FourthTurn();}
 
 }
