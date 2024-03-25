@@ -1,0 +1,91 @@
+@startuml Detailed Represenation of Map
+
+    class AreaMap {
+        -biomes: Map<List<String>, Position>
+        -creeks: List<POI>
+        -site: POI
+        +AreaMap(biomeMap: Map<List<String>, Position>, creekList: List<POI>, emergencySite: POI)
+        +getBiomes(): Map<List<String>, Position>
+        +calculateClosestCreek(): String
+        +getDistance(creek: POI): double
+    }
+
+    Searcher <|-- CreekSearcher
+    CreekSearcher <|.. GridSearcher
+
+    interface CreekSearcher {
+        +updateInfo(info: Information, pos: Position)
+        +giveClosestCreek(): String
+    }
+
+    interface Searcher {
+        +performSearch(): Decision
+    }
+
+    class GridSearcher {
+        -currentState: GridSearchState
+        -currentInfo: Information
+        -currentPos: Position
+        -allBiomes: Map<List<String>, Position>
+        -creeks: List<POI>
+        -site: POI
+        -dirBeforeTurn: Compass
+        -initialDir: Compass
+        -range: int
+        -groundRange: int
+        +GridSearcher(firstDir: Compass, currentDir: Compass)
+        +giveSite(): POI
+        +creeksAmount(): int
+        +setState(gState: GridSearchState)
+        +^performSearch(): Decision
+        +^giveClosestCreek(): String
+        -addCreek(info: Information)
+        -addSite(info: Information)
+    }
+
+    GridSearcher "1" *-- AreaMap
+    
+    GridSearcher +-- GridSearchState
+
+    interface GridSearchState {
+        +handle(searcher: GridSearcher): Decision
+    }
+
+    GridSearcher +-- ScanningState
+    GridSearcher +-- ScanningInTurn
+
+    GridSearchState <|.. ScanningState
+    GridSearchState <|.. ScanningInTurn
+
+    class ScanningState {
+        +^handle(searcher: GridSearcher): Decision
+    }
+
+    class ScanningInTurn {
+        +^handle(searcher: GridSearcher): Decision
+    }
+
+    class POI {
+        -ID: String
+        -pos: Position
+        +POI(ID: String, pos: Position)
+        +getXvalue(): int
+        +getYvalue(): int
+    }
+
+    GridSearcher "*" o-- "*" POI
+    Drone "1" *-- GridSearcher
+    AreaMap --> Position
+    POI --> Position
+    AreaMap --> POI
+
+    class Position {
+
+    }
+
+    class Drone {
+
+    }
+
+
+@enduml

@@ -165,11 +165,11 @@
         -biomes 
         -creeks
         -site
-        +calculateClosest()
+        +calculateClosestCreek()
     }
 
     GridSearcher "1" *-- "*" POI
-    GridSearcher "*" o-- AreaMap 
+    GridSearcher "1" *-- AreaMap 
     Drone --> Compass
     IslandArriver --> Compass
     GridSearcher --> Compass
