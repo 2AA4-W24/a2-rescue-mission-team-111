@@ -55,8 +55,7 @@ public class Explorer implements IExplorerRaid {
 
     @Override
     public String deliverFinalReport() {
-        String closest = drone.giveClosest();
-        logger.info("CLOSEST CREEK: " + closest);
+        String closest = drone.giveClosest(); 
         return closest;
     }
 
