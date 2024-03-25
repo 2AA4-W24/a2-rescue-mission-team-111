@@ -168,7 +168,7 @@
         +calculateClosestCreek()
     }
 
-    GridSearcher "1" *-- "*" POI
+    GridSearcher "*" o-- "*" POI
     GridSearcher "1" *-- AreaMap 
     Drone --> Compass
     IslandArriver --> Compass
