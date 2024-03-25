@@ -46,9 +46,8 @@ public class Drone {
         switch(currentState) {
             case FINDING:
                 islandArriver.updateInfo(currentInfo);
-                decision = islandArriver.find();
-                String instruction1 = decision.getAction();
-                if (instruction1.equals("fly")) {
+                decision = islandArriver.find(); 
+                if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 if (islandArriver.findingIsDone()) {
@@ -57,11 +56,10 @@ public class Drone {
                 return decision;
             case ARRIVING: 
                 islandArriver.updateInfo(currentInfo);
-                decision = islandArriver.moveTo();
-                String instruction2 = decision.getAction();
-                if (instruction2.equals("fly")) {
+                decision = islandArriver.moveTo(); 
+                if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
-                } else if (instruction2.equals("heading")) {
+                } else if (decision.getAction().equals("heading")) {
                     Compass oldDir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(oldDir, direction);
@@ -73,13 +71,12 @@ public class Drone {
                 return decision;
             case SEARCHING:
                 gridSearcher.updateInfo(currentInfo, pos);
-                decision = gridSearcher.performSearch();
-                String instruction3 = decision.getAction();
-                if (instruction3.equals("heading")) {
+                decision = gridSearcher.performSearch(); 
+                if (decision.getAction().equals("heading")) {
                     Compass oldDir = direction;
                     direction = decision.getDir();
                     pos = pos.changePosition(oldDir, direction);
-                } else if (instruction3.equals("fly")) {
+                } else if (decision.getAction().equals("fly")) {
                     pos = pos.changePosition(direction);
                 }
                 return decision;
