@@ -11,7 +11,7 @@ public class GridSearcher implements CreekSearcher {
     private Information currentInfo;
     private Position currentPos;
 
-    private Map<List<String>, Position> allBiomes = new HashMap<>();
+    private Map<Position, List<String>> allBiomes = new HashMap<>();
     private List<POI> creeks = new ArrayList<>();
     private POI site = new POI("NULL", new Position(0, 0));
 
@@ -145,7 +145,7 @@ public class GridSearcher implements CreekSearcher {
             for (int i = 0; i<biomes.length(); i++) {
                 biomeList.add(biomes.getString(i));
             }
-            allBiomes.put(biomeList, currentPos);
+            allBiomes.put(currentPos, biomeList);
 
             searcher.setState(new CheckingDone());
             Compass dirBeforeTheTurn = searcher.dirBeforeTurn;
@@ -227,7 +227,7 @@ public class GridSearcher implements CreekSearcher {
             for (int i = 0; i<biomes.length(); i++) {
                 biomeList.add(biomes.getString(i));
             }
-            allBiomes.put(biomeList, currentPos);
+            allBiomes.put(currentPos, biomeList);
 
             for (int i = 0; i<biomes.length(); i++) {
                 if (!(biomes.get(i).equals("OCEAN"))) {
