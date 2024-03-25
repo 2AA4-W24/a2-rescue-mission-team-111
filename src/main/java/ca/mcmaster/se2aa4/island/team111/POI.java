@@ -1,5 +1,7 @@
 package ca.mcmaster.se2aa4.island.team111;
 
+//For way of storing creeks and sites tied to their positions
+//Stands for Point Of Interest
 public class POI {
 
     private String ID;
