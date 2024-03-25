@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.json.JSONObject;
 
+//Overall, this is an algorithm that finds the island by echoing left and right until it gets ground back.
+//Then it completes a big turn to recenter and move to the island at a low cost (many flies in a row)
 public class IslandArriver implements Finder, Arriver {
 
     private ArriverState currentState = new FlyingArriver();

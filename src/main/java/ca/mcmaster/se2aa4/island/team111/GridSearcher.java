@@ -5,6 +5,10 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+//GridSearcher iteratively scans and flies over the island until it scans ocean, then echoes forward. 
+//If there is ground in front, it flies until there and continues normally. If not, it does a large turn that
+//recenters the drone to the next column without missing creeks on the edges. It checks if it is done with the island during each turn
+//The state pattern has two scanning states that adds any creeks, biomes, and site(s) found to the class variables
 public class GridSearcher implements CreekSearcher {
 
     private GridSearchState currentState = new FlyingSearcher();
@@ -13,7 +17,7 @@ public class GridSearcher implements CreekSearcher {
 
     private Map<Position, List<String>> allBiomes = new HashMap<>();
     private List<POI> creeks = new ArrayList<>();
-    private POI site = new POI("NULL", new Position(0, 0)); //Position of site is initially hard-coded before being assigned
+    private POI site = new POI("NULL", new Position(0, 0)); //Position of site is initially given this default position before being assigned
 
     private Compass initialDir;
     private Compass dirBeforeTurn;

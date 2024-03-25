@@ -38,11 +38,15 @@ public class Drone {
 
     public Decision giveDecision() {
         Decision decision;
-        //If battery is low, stop
+        //If battery is low, stop before any other instructions are taken.
         if (battery.isLow(pos)) {
             return new Decision("stop");
         }
 
+        //The Drone executes the correct algorithm based on its current state
+        //When finding is done according to islandArriver, it'll move to the arriving at island phase
+        //When arriving phase is finished, the searching (for creeks) phase begins, until we return stop or battery is low
+        //The position of the drone is updated based on the action/decision received
         switch(currentState) {
             case FINDING:
                 islandArriver.updateInfo(currentInfo);
