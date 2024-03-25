@@ -2,7 +2,7 @@ package ca.mcmaster.se2aa4.island.team111;
 
 public class Decision {
     private String action;
-    private Compass direction = Compass.NONE;
+    private Compass direction = Compass.NONE; //Default value of NONE when no direction for an action
 
     public Decision(String theAction) {
         this.action = theAction;
