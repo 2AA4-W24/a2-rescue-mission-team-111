@@ -14,7 +14,7 @@ public class Battery {
     public boolean isLow(Position pos) {
         double x = pos.getX();
         double y = pos.getY();
-        double minCharge = (Math.sqrt((x*x)+(y*y))*0.2) + 20; //Equation derived from multiple tests with "stop" command
+        double minCharge = (Math.sqrt((x*x)+(y*y))*0.2) + 20; //Equation derived from multiple tests with "stop" command on different maps
         return charge <= minCharge;
     }
 
