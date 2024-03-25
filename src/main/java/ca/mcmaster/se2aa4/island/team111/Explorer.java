@@ -42,7 +42,7 @@ public class Explorer implements IExplorerRaid {
         JSONObject response = new JSONObject(new JSONTokener(new StringReader(s)));
         ResponseTranslator responseTranslator = new ResponseTranslator(response);
         responseTranslator.translate();
-        Information info = responseTranslator.getInfo();
+        Information info = responseTranslator.getInfo(); //Eliminates coupling to JSONObject
         drone.receiveInfo(info);
         logger.info("** Response received:\n"+response.toString(2));
         Integer cost = response.getInt("cost");
