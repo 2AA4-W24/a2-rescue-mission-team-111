@@ -84,7 +84,7 @@ public class GridSearcher implements CreekSearcher {
 
     //This state checks how far away we are from out of range or ground. If ground is far enough, we assign that range to groundRange
     //If out of range is an acceptable distance away, we start our big turn to recenter to the next column
-    //If out of range is too close, we turn earlier 
+    //If out of range is too close, we turn earlier to avoid going MIA.
     private class EchoingForwardState implements GridSearchState {
         @Override
         public Decision handle(GridSearcher searcher) {
