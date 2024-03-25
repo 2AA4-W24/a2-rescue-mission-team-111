@@ -8,15 +8,15 @@ import org.json.JSONObject;
 
 class DecisionTranslatorTest {
 
-    // @Test
-    // void checkTranslateCorrectness() {
-    //     Decision dec = new Decision("fly");
-    //     DecisionTranslator dtrans = new DecisionTranslator(dec);
-    //     dtrans.translate();
+    @Test
+    void checkTranslateCorrectness() {
+        Decision dec = new Decision("fly");
+        DecisionTranslator dtrans = new DecisionTranslator(dec);
+        dtrans.translate();
 
-    //     JSONObject expected = new JSONObject();
-    //     expected.put("action", "fly");
+        JSONObject expected = new JSONObject();
+        expected.put("action", "fly");
 
-    //     assertEquals(expected.toString(), dtrans.getDecision().toString());
-    // }
+        assertEquals(expected.toString(), dtrans.getDecision().toString());
+    }
 }
