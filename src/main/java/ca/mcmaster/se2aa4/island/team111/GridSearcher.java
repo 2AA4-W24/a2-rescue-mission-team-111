@@ -51,7 +51,7 @@ public class GridSearcher implements CreekSearcher {
     @Override
     public String giveClosestCreek() {
         AreaMap areaMap = new AreaMap(allBiomes, creeks, site);
-        return areaMap.calculateClosest();
+        return areaMap.calculateClosestCreek();
     }
 
     private interface GridSearchState {

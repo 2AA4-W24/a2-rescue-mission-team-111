@@ -21,7 +21,7 @@ public class AreaMap {
     }
 
     //Calculates the closest creek to the site
-    public String calculateClosest() {
+    public String calculateClosestCreek() {
         if (creeks.isEmpty()) {
             return "No creeks found";
         } else if (site.getID().equals("null")) { //if site not found

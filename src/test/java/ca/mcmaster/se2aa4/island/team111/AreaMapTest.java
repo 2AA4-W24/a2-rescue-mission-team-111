@@ -18,7 +18,7 @@ class AreaMapTest {
     @Test 
     void calculateClosestNoCreeks(){
         AreaMap calc = new AreaMap(allBiomes,new ArrayList<POI>(), new POI("site", new Position(0, 0)));
-        assertEquals("No creeks found", calc.calculateClosest());
+        assertEquals("No creeks found", calc.calculateClosestCreek());
     }
 
     // Get the correct closest creek 
@@ -31,7 +31,7 @@ class AreaMapTest {
         creeks.add(new POI("creek3", new Position(1, 0)));
         AreaMap calc = new AreaMap(allBiomes,creeks, new POI("site", new Position(0, 0)));
         
-        assertEquals("creek3", calc.calculateClosest());
+        assertEquals("creek3", calc.calculateClosestCreek());
     }
 
     // Crosscheck with pythagoras if the distance calculation is correct
