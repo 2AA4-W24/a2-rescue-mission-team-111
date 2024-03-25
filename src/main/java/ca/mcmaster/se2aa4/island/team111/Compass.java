@@ -4,6 +4,7 @@ public enum Compass
 {
     NORTH, WEST, SOUTH, EAST, NONE;
 
+    //On the right of current direction
     public Compass right(){
         switch(this){
             case NORTH: return Compass.EAST;
@@ -13,6 +14,8 @@ public enum Compass
             default: return this;
         }
     }
+
+    //On the left of current direction
     public Compass left(){
         switch(this){
             case NORTH: return Compass.WEST;
@@ -23,6 +26,7 @@ public enum Compass
         }
     }
 
+    //The opposite of the current direction
     public Compass opposite(){
         switch(this){
             case NORTH: return Compass.SOUTH;
